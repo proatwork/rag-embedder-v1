@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Norms Chat</title>
+<link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+<aside id="sidebar" aria-label="Conversations">
+  <div class="sidebar-header">
+    <button id="new-chat" class="primary" type="button">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      New chat
+    </button>
+  </div>
+  <div class="sidebar-title">Conversations</div>
+  <div id="history-list"></div>
+</aside>
+
+<div id="content">
+<header>
+  <div class="brand">
+    <button id="sidebar-toggle" class="ghost square" type="button" title="Show or hide the conversations" aria-label="Show or hide the conversations">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg>
+    </button>
+    <h1>Norms Chat</h1>
+  </div>
+  <div class="actions">
+    <button id="clear" class="ghost" type="button" title="Start a new chat" aria-label="New chat">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="label">New chat</span>
+    </button>
+    <button id="toggle" class="ghost" type="button" title="Servers, model and search settings" aria-label="Settings">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h8M18 7h2M4 17h2M12 17h8"/><circle cx="15" cy="7" r="2.5"/><circle cx="9" cy="17" r="2.5"/></svg>
+      <span class="label">Settings</span>
+    </button>
+  </div>
+</header>
+
+<section id="settings" class="hidden" aria-label="Settings">
+  <label>Embedding server
+    <input id="embedding_server" type="text" spellcheck="false" placeholder="http://192.168.0.157:1234">
+  </label>
+  <label>Chat server
+    <div class="row stretch">
+      <input id="chat_server" type="text" spellcheck="false" placeholder="http://192.168.0.157:1234">
+      <button id="refresh" type="button" title="Reload the model list">↻</button>
+    </div>
+  </label>
+  <label>API style
+    <select id="chat_api">
+      <option value="lmstudio">LM Studio (native; shows loading and prompt progress)</option>
+      <option value="openai">OpenAI-style (chat completions; for hosted services)</option>
+    </select>
+  </label>
+  <label>Chat path (added after the server address; empty: the usual one)
+    <input id="chat_path" type="text" spellcheck="false" autocomplete="off">
+  </label>
+  <label>API key (only for a hosted API)
+    <div class="row stretch">
+      <input id="chat_api_key" type="password" spellcheck="false" autocomplete="new-password" placeholder="not used by LM Studio">
+      <button id="showkey" type="button" aria-pressed="false">Show</button>
+      <button id="forgetkey" type="button" title="Remove the key from this browser">Forget</button>
+    </div>
+  </label>
+  <label>Chat model (pick, or type its id)
+    <input id="model" type="text" list="models" spellcheck="false" autocomplete="off">
+    <datalist id="models"></datalist>
+  </label>
+  <div class="row">
+    <label>Chunks per search
+      <input id="top" type="number" min="1" max="50" step="1">
+    </label>
+    <label>Norm
+      <select id="doc"></select>
+    </label>
+  </div>
+  <label>Search
+    <select id="search_mode">
+      <option value="model">The model searches (several searches, in its own words; OpenAI-style only)</option>
+      <option value="once">Once, with the question's own words</option>
+    </select>
+  </label>
+  <div id="searchNote" class="note"></div>
+  <div id="endpoint" class="note"></div>
+  <div id="modelsNote" class="note"></div>
+  <div id="keyNote" class="note">The API key is kept in this browser (localStorage). It is sent only to this page's own server, which passes it to an OpenAI-style chat server as a Bearer token (never to LM Studio or the embedding server, and never over plain http to a server outside your network).</div>
+</section>
+
+<main id="chat" aria-live="polite">
+  <div class="empty" id="empty"></div>
+</main>
+
+<form id="composer" autocomplete="off">
+  <div class="composer-box">
+    <textarea id="question" rows="1" placeholder="Ask about the norms…" aria-label="Your question" aria-describedby="composer-hint"></textarea>
+    <button id="send" class="primary round" type="submit" title="Send (Enter)" aria-label="Send">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5.5 11.5 12 5l6.5 6.5"/></svg>
+    </button>
+    <button id="stop" class="round" type="button" title="Stop the answer" aria-label="Stop the answer" hidden>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/></svg>
+    </button>
+  </div>
+  <div class="composer-hint" id="composer-hint">Enter sends · Shift+Enter adds a line</div>
+</form>
+</div>
+
+<div id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Image viewer">
+  <img id="lightbox_img" alt="">
+  <div class="cap" id="lightbox_caption"></div>
+</div>
+
+<script src="chatbot.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "Normativ_P118_1_2015": {
+    "code": "P118-1/2025",
+    "title": "Normativ privind securitatea la incendiu a construcțiilor",
+    "year": 2025,
+    "status": "in_force",
+    "profile": "art"
+  },
+  "Normativ_P118_2_2013": {
+    "code": "P118/2-2013",
+    "title": "Normativ privind securitatea la incendiu a construcțiilor, Partea a II-a - Instalații de stingere",
+    "year": 2013,
+    "status": "in_force",
+    "profile": "decimal",
+    "first_body_page": 4
+  },
+  "Normativ_P118_3_2015": {
+    "code": "P118/3-2015",
+    "title": "Normativ privind securitatea la incendiu a construcțiilor, Partea a III-a - Instalații de detectare, semnalizare și avertizare incendiu",
+    "year": 2015,
+    "status": "in_force",
+    "profile": "decimal",
+    "first_body_page": 3
+  }
+}

@@ -1,0 +1,18 @@
+# The virtual environment: built on each machine from requirements.txt, never copied
+venvs/
+
+# Python's compiled files
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# The earlier OCR tools and their outputs (1.1 GB): kept on disk, not in the repository
+OLD/
+
+# This machine's own Claude Code permissions
+.claude/settings.local.json
+NormativeIncendiu
+docs_processed/
+venvs

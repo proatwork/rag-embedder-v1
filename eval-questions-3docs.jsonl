@@ -1,0 +1,322 @@
+{"question": "Ce rezistență la foc trebuie să aibă un perete antifoc dintre două compartimente de incendiu?", "doc": "P118-1/2025", "articles": ["2.3.2.1.2"], "author": "claude"}
+{"question": "De la ce înălțime se consideră o clădire ca fiind înaltă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:16", "p118-1-2025:sec-72:0"], "author": "claude"}
+{"question": "cat de lat trebuie sa fie drumul de acces pentru masinile de pompieri", "doc": "P118-1/2025", "articles": ["2.6.2"], "author": "claude"}
+{"question": "Cum încadrez un spațiu în risc mic, mijlociu sau mare de incendiu după sarcina termică?", "doc": "P118-1/2025", "articles": ["2.1.2.2"], "author": "claude"}
+{"question": "La ce distanță față de clădirea vecină pot amplasa o construcție nouă?", "doc": "P118-1/2025", "articles": ["2.2.1.2"], "author": "claude"}
+{"question": "Ce arie construită maximă poate avea un compartiment de incendiu la o clădire civilă obișnuită?", "doc": "P118-1/2025", "articles": ["3.1.2.6"], "author": "claude"}
+{"question": "Câte lifturi de pompieri sunt obligatorii într-o clădire foarte înaltă?", "doc": "P118-1/2025", "articles": ["4.2.4.15"], "author": "claude"}
+{"question": "Ce uși trebuie montate într-un perete antifoc EI-M 180?", "doc": "P118-1/2025", "articles": ["2.3.2.2.2.1"], "ids": ["p118-1-2025:sec-3-tab1"], "author": "claude"}
+{"question": "Cum se face desfumarea unui atrium închis?", "doc": "P118-1/2025", "articles": ["8.6.1", "8.6.2"], "author": "claude"}
+{"question": "cand am voie sa am o singura cale de evacuare", "doc": "P118-1/2025", "articles": ["2.5.3.1"], "author": "claude"}
+{"question": "Ce clasă BROOF trebuie să aibă învelitoarea acoperișului?", "doc": "P118-1/2025", "articles": ["2.1.3.2"], "author": "claude"}
+{"question": "Cum stabilesc numărul de persoane dintr-o clădire pentru calculul evacuării?", "doc": "P118-1/2025", "articles": ["2.5.9.2"], "author": "claude"}
+{"question": "O curte interioară închisă trebuie să aibă acces carosabil pentru pompieri?", "doc": "P118-1/2025", "articles": ["2.6.5"], "author": "claude"}
+{"question": "la o cladire existenta cu atrium trebuie facuta evacuarea fumului", "doc": "P118-1/2025", "articles": ["A.10.3.9.4"], "author": "claude"}
+{"question": "Ce lățime liberă trebuie să aibă ușile și scările de evacuare în funcție de numărul de fluxuri?", "doc": "P118-1/2025", "articles": ["2.5.11.1", "2.5.15.1.1", "2.5.15.1.2"], "author": "claude"}
+{"question": "La ce clădiri sunt obligatorii hidranții interiori?", "doc": "P118/2-2013", "articles": ["4.1"], "author": "claude"}
+{"question": "cat timp trebuie sa functioneze hidrantii interiori", "doc": "P118/2-2013", "articles": ["4.35"], "author": "claude"}
+{"question": "Ce suprafață maximă poate proteja un sprinkler?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-7.70-tab1"], "author": "claude"}
+{"question": "Până la ce înălțime se poate depozita marfa în spații cu pericol mediu OH1, OH2, OH3 protejate cu sprinklere?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-7.4-tab1"], "author": "claude"}
+{"question": "În ce clădiri este obligatorie instalația de detectare și semnalizare a incendiilor?", "doc": "P118/3-2015", "articles": ["3.3.1"], "author": "claude"}
+{"question": "La ce înălțime se montează butoanele manuale de incendiu?", "doc": "P118/3-2015", "articles": ["3.7.13.3"], "author": "claude"}
+{"question": "cate ore trebuie sa tina acumulatorii centralei de incendiu", "doc": "P118/3-2015", "articles": ["4.3.1", "4.3.3"], "author": "claude"}
+{"question": "Dacă am o ușă rezistentă la foc cu o clasificare mai bună decât cea cerută de normativ, este acceptată sau trebuie să rămân strict la clasa prevăzută?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.1.12:0"], "author": "claude2"}
+{"question": "Până la ce înălțime trebuie marcate distinct pe peretele cortină locurile pe unde intră pompierii într-o clădire foarte înaltă?", "doc": "P118-1/2025", "articles": ["4.2.4.2"], "author": "claude2"}
+{"question": "La un perete antifoc plasat într-un colț intrând al unei clădiri în formă de L sau U, cu unghi între 90° și 135°, ce distanță minimă trebuie păstrată între golurile din pereții exteriori vecini?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.3.2.1.9:5"], "author": "claude2"}
+{"question": "Pot trece conducte sau cabluri electrice prin peretele antifoc dintre două compartimente și cum trebuie închise spațiile rămase libere în jurul lor?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.3.2.1.12:0"], "author": "claude2"}
+{"question": "Ce clasă de reacție la foc trebuie să aibă planșeul care desparte spații cu risc foarte mare de incendiu și explozie?", "doc": "P118-1/2025", "articles": ["2.3.4.4.2"], "author": "claude2"}
+{"question": "La o clădire cu funcțiuni mixte, după ce criteriu se alege clasa de reacție la foc a termoizolației exterioare de pe fațadă?", "doc": "P118-1/2025", "articles": ["2.3.6.1.8"], "author": "claude2"}
+{"question": "Ce rezistență la foc trebuie să aibă pereții puțului de ascensor într-o clădire încadrată la nivelul II de stabilitate la incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.4.4.2.1:0"], "author": "claude2"}
+{"question": "Din ce clasă de reacție la foc trebuie să fie plafoanele false lamelare sau perforate și când se admite o clasă mai slabă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.4.5.2:1"], "author": "claude2"}
+{"question": "La o fațadă dublă (double skin) a unei clădiri foarte înalte de peste 75 m, din câte în câte etaje trebuie partiționată pe orizontală?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.4.7.3.3:1"], "author": "claude2"}
+{"question": "parapet atrium sub patru niveluri rezistență foc", "doc": "P118-1/2025", "articles": ["2.4.9.11"], "author": "claude2"}
+{"question": "unde se pun golurile de decomprimare la o incapere cu risc de explozie si ce trebuie evitat cu suflul exploziei", "doc": "P118-1/2025", "articles": ["2.4.13.5"], "author": "claude2"}
+{"question": "Ce se poate face când un canal de ventilare care trece printr-un perete antifoc dintr-o încăpere de instalații nu poate fi etanșat cu materiale care ating singure rezistența cerută?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.4.14.3:3"], "author": "claude2"}
+{"question": "evacuare fum tiraj natural camera depozitare procent pardoseala", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.4.16.3:1"], "author": "claude2"}
+{"question": "Ce cerință trebuie să îndeplinească izolația termică a fațadei pe care se montează panouri fotovoltaice?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.4.18.8:0"], "author": "claude2"}
+{"question": "Când este permis accesul direct în camera bateriilor de acumulatori, fără încăpere tampon cu suprapresiune?", "doc": "P118-1/2025", "articles": ["2.4.19.6"], "author": "claude2"}
+{"question": "Ce ecrane trebuie puse în jurul golului din planșeu la scările rulante deschise, într-o clădire de nivel I sau II de stabilitate la incendiu?", "doc": "P118-1/2025", "articles": ["2.5.6.3.3"], "author": "claude2"}
+{"question": "formulă calcul număr fluxuri evacuare utilizatori rotunjire", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.5.12.1:0"], "author": "claude2"}
+{"question": "trebuie pereti rezistenti la foc intre grupul sanitar si un birou sau o camera de dormit?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.1.3.6:1"], "author": "claude2"}
+{"question": "Ce clasă de rezistență la foc se recomandă pentru ușa care dă din casa scării într-un apartament dintr-un bloc de locuit cu înălțime obișnuită?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.2.1.11:1"], "author": "claude2"}
+{"question": "În ce condiții se poate mări cu 25% lungimea maximă de evacuare într-o clădire de birouri?", "doc": "P118-1/2025", "articles": ["3.2.2.9"], "author": "claude2"}
+{"question": "Ce arie maximă poate avea un rezervor de fum într-un magazin, în cazul evacuării naturale a fumului față de cel cu ventilatoare mecanice?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.2.3.11:1"], "author": "claude2"}
+{"question": "Ce clasă minimă de reacție la foc trebuie să aibă finisajele și izolațiile din spațiile accesibile elevilor într-o școală?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.2.6.5:0"], "author": "claude2"}
+{"question": "La un hotel cu mai mult de 50 de locuri de cazare, pe câte laturi trebuie asigurat accesul autospecialelor de pompieri?", "doc": "P118-1/2025", "articles": ["3.2.7.8"], "author": "claude2"}
+{"question": "distanță de siguranță construcții izolate montane Delta Dunării", "doc": "P118-1/2025", "articles": ["3.2.10.2"], "author": "claude2"}
+{"question": "Ce nivel de stabilitate la incendiu trebuie să aibă un parcaj suprateran pentru 8 autoturisme?", "doc": "P118-1/2025", "articles": ["3.2.11.4"], "author": "claude2"}
+{"question": "Ce rezistență la foc trebuie să aibă pereții puțului de lift dintr-un parcaj suprateran cu peste 10 mașini?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.2.11.15:1"], "author": "claude2"}
+{"question": "ce stingatoare trebuie puse intr-un parcaj de autoturisme, cate si de ce performanta", "doc": "P118-1/2025", "articles": ["3.2.11.28"], "author": "claude2"}
+{"question": "la o scena in aer liber cu peste 400 de spectatori cum se modifica distanta de siguranta fata de cladirile vecine?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.3.3.1:0"], "author": "claude2"}
+{"question": "Ce debit minim de stingere și pentru cât timp se recomandă la un camping de 5.000 m² sau mai mare?", "doc": "P118-1/2025", "articles": ["3.3.4.6"], "author": "claude2"}
+{"question": "De unde până unde se măsoară lungimea de evacuare pe coridor într-o clădire înaltă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-4.1.5.6:0"], "author": "claude2"}
+{"question": "Ce rezistență la foc și ce clasă de reacție la foc trebuie să aibă pereții antifoc dintre compartimente la o clădire foarte înaltă?", "doc": "P118-1/2025", "articles": ["4.2.2.2"], "author": "claude2"}
+{"question": "Ce uși trebuie la încăperea tampon de acces la liftul pentru persoane cu dizabilități într-o clădire foarte înaltă de peste 75 m?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-4.2.4.13:1"], "author": "claude2"}
+{"question": "Cum se deschid și cu ce dotare se montează ușile încăperilor tampon spre casa scării de evacuare la o clădire foarte înaltă?", "doc": "P118-1/2025", "articles": ["4.2.5.8"], "author": "claude2"}
+{"question": "Câte ieșiri de evacuare, separate de sala teatrului, trebuie să aibă o scenă cu cortină de siguranță?", "doc": "P118-1/2025", "articles": ["4.3.4.2.6"], "author": "claude2"}
+{"question": "categoria B pericol incendiu lichide temperatura inflamabilitate", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-6.1.1.1:1"], "author": "claude2"}
+{"question": "Când poate trece o cale de evacuare dintr-o hală printr-un spațiu cu risc mare de incendiu și ce rezistență au pereții dintre cele două trasee?", "doc": "P118-1/2025", "articles": ["6.1.5.2"], "author": "claude2"}
+{"question": "ce latime minima trebuie sa aiba usile de evacuare la un grajd de vaci sau cai?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-6.1.5.18:2"], "author": "claude2"}
+{"question": "Pot depozita în aceeași încăpere materiale solide și lichide combustibile?", "doc": "P118-1/2025", "articles": ["6.3.1.4"], "author": "claude2"}
+{"question": "Ce acces trebuie asigurat pentru autospeciale la un depozit deschis de materiale combustibile de peste 600 m²?", "doc": "P118-1/2025", "articles": ["6.4.8"], "author": "claude2"}
+{"question": "Ce rezistență minimă la foc trebuie să aibă canalele de evacuare a fumului care trec prin alte încăperi?", "doc": "P118-1/2025", "articles": ["7.3.9"], "author": "claude2"}
+{"question": "La o clădire cu funcțiuni mixte, când trebuie ca scara de evacuare închisă din interior să aibă ieșire pe terasă?", "doc": "P118-1/2025", "articles": ["7.5.14"], "author": "claude2"}
+{"question": "Pentru ce încăperi de depozitare din clădiri civile trebuie prevăzută evacuarea fumului, în funcție de sarcina termică și de suprafață?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-8.1.8:1"], "author": "claude2"}
+{"question": "la desfumarea naturala organizata ce arie trebuie sa aiba golurile de admisie a aerului fata de cele prin care iese fumul", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-8.2.1:0"], "author": "claude2"}
+{"question": "Ce clasă de rezistență la foc trebuie să aibă ventilatoarele care introduc aer proaspăt în caz de incendiu, montate chiar în spațiul servit, și când se acceptă o clasă mai redusă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-8.4.2:1"], "author": "claude2"}
+{"question": "admisii aer desfumare distanță pardoseală", "doc": "P118-1/2025", "articles": ["8.7.7"], "author": "claude2"}
+{"question": "Când sunt obligatorii ascensoarele pentru transportul persoanelor în cărucior care pot servi și la evacuarea asistată în caz de incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-16:0"], "author": "claude2"}
+{"question": "Cum se calculează distanța minimă dintre un depozit de azotat de amoniu și clădirile de locuit sau hotelurile din apropiere?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-25:5"], "author": "claude2"}
+{"question": "În ce condiții pot fi folosite ușile turnante pe o cale de evacuare a utilizatorilor?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-32:2"], "author": "claude2"}
+{"question": "Ce înălțime minimă trebuie să aibă circulațiile acoperite din spatele tribunelor unui stadion și la ce înălțime se fac parapetele?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-71:5"], "author": "claude2"}
+{"question": "Cu cât trebuie să depășească partițiile despărțitoare din material A1 marginea zonei de depozitare într-o hală de depozitare?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-83:1"], "author": "claude2"}
+{"question": "Ce rezistență la foc minimă trebuie să aibă peretele antifoc dintre o construcție existentă și o extindere care formează un compartiment de incendiu nou?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-93:3"], "author": "claude2"}
+{"question": "Ce risc de incendiu au bucătăriile și centralele termice dintr-o clădire publică existentă, și cum se schimbă dacă au instalație automată de stingere?", "doc": "P118-1/2025", "articles": ["A.10.2.1.3"], "author": "claude2"}
+{"question": "Până la ce valoare se poate reduce rezistența la foc a stâlpilor și pereților unei construcții existente cu structură metalică neprotejată și densitate a sarcinii termice de maxim 420 MJ/m²?", "doc": "P118-1/2025", "articles": ["A.10.2.1.12"], "author": "claude2"}
+{"question": "etanșare rosturi perete antifoc planșeu clădire existentă", "doc": "P118-1/2025", "articles": ["A.10.2.3.9"], "author": "claude2"}
+{"question": "Unde se recomandă să fie amplasată încăperea tampon a unui perete antifoc dintr-o clădire existentă și spre ce spații se dispune?", "doc": "P118-1/2025", "articles": ["A.10.2.3.26"], "author": "claude2"}
+{"question": "perete cortina planseu etansare E 30 cladire existenta", "doc": "P118-1/2025", "articles": ["A.10.2.4.27"], "author": "claude2"}
+{"question": "pana la ce arie desfasurata o hala existenta de productie sau depozitare poate fi accesibila pompierilor pe o singura latura", "doc": "P118-1/2025", "articles": ["A.10.6.1.13"], "author": "claude2"}
+{"question": "Cum trebuie să se deschidă ușile de pe traseul de evacuare dintr-o construcție existentă și în ce caz se admite deschiderea spre interior?", "doc": "P118-1/2025", "articles": ["A.10.2.5.16"], "author": "claude2"}
+{"question": "Cu ce rezistență la foc se separă holul sau vestibulul care duce spre exterior de încăperile învecinate de la parter, într-o clădire existentă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-A.10.2.5.35:1"], "author": "claude2"}
+{"question": "Este permis să se elimine prin aceeași instalație de ventilare substanțe care, amestecate, pot lua foc sau exploda, într-o construcție existentă?", "doc": "P118-1/2025", "articles": ["A.10.2.6.4"], "author": "claude2"}
+{"question": "Pot fi comasate clădirile existente înalte și foarte înalte cu construcții care au altă destinație?", "doc": "P118-1/2025", "articles": ["A.10.3.2.2"], "author": "claude2"}
+{"question": "Ce suprafață minimă trebuie să aibă dispozitivele de evacuare a fumului la o casă de scări fără lumină naturală dintr-o clădire publică existentă?", "doc": "P118-1/2025", "articles": ["A.10.3.9.2"], "author": "claude2"}
+{"question": "Ce risc de incendiu se consideră pentru spațiile comerciale dintr-o clădire existentă dacă sunt echipate cu stingere automată cu apă?", "doc": "P118-1/2025", "articles": ["A.10.3.10.43"], "author": "claude2"}
+{"question": "Ce rezistență la foc au ușile încăperilor tampon prin care se fac golurile de circulație din peretele dintre scenă și sala aglomerată, într-o clădire de cultură existentă?", "doc": "P118-1/2025", "articles": ["A.10.3.10.69"], "author": "claude2"}
+{"question": "Cu ce rezistență la foc se separă nivelurile subterane de cele supraterane la o clădire existentă pentru turism?", "doc": "P118-1/2025", "articles": ["A.10.3.10.116"], "author": "claude2"}
+{"question": "Ce rezistență la foc trebuie să aibă pereții și planșeul încăperilor tampon de la accesul în scările de evacuare ale clădirilor existente înalte, la nivelurile supraterane?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-A.10.4.1.9:0"], "author": "claude2"}
+{"question": "cladirile existente inalte si foarte inalte pe cate laturi trebuie sa aiba cai de acces pentru autospeciale de interventie", "doc": "P118-1/2025", "articles": ["A.10.4.1.26"], "author": "claude2"}
+{"question": "cate scaune mobile se pot pune intr-o loja dintr-o sala aglomerata existenta daca restul scaunelor trebuie fixate de pardoseala", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-A.10.4.1.45:0"], "author": "claude2"}
+{"question": "Ce lichide combustibile nu sunt admise în subsolul unei clădiri publice existente, în afara locurilor special amenajate și marcate?", "doc": "P118-1/2025", "articles": ["A.10.4.1.71"], "author": "claude2"}
+{"question": "În ce situații se pot folosi structuri metalice neprotejate la foc într-o construcție de producție existentă de nivel II de stabilitate, indiferent de densitatea sarcinii termice?", "doc": "P118-1/2025", "articles": ["A.10.5.1.6"], "author": "claude2"}
+{"question": "perete separare categoria C D hala parter", "doc": "P118-1/2025", "articles": ["A.10.5.4.4"], "author": "claude2"}
+{"question": "Cum se protejează accesul la lift dintr-un spațiu închis de producție din categoria C de pericol de incendiu, într-o construcție existentă?", "doc": "P118-1/2025", "articles": ["A.10.5.6.5"], "author": "claude2"}
+{"question": "Ce greutate trebuie să aibă stingătorul și la câți metri pătrați de arie desfășurată se prevede unul în construcțiile existente de producție din categoriile A, B sau C?", "doc": "P118-1/2025", "articles": ["A.10.5.10.2"], "author": "claude2"}
+{"question": "De la ce arie devine necesar sistemul de evacuare a fumului și gazelor fierbinți la construcțiile existente blindate din categoriile A, B sau C de pericol de incendiu?", "doc": "P118-1/2025", "articles": ["A.10.6.1.32"], "author": "claude2"}
+{"question": "in depozitele existente cu materiale combustibile din clasele P3 P4 P5 pot fi amenajate birouri in aceeasi incapere cu marfa", "doc": "P118-1/2025", "articles": ["A.10.6.2.34"], "author": "claude2"}
+{"question": "Când este considerată civilă (publică) o clădire existentă cu funcțiuni mixte, în funcție de ponderea ariei desfășurate a părților civile?", "doc": "P118-1/2025", "articles": ["A.10.7.1.3"], "author": "claude2"}
+{"question": "dispozitive obturare goluri desfumare acționare automată comandă manuală", "doc": "P118-1/2025", "articles": ["A.10.9.6"], "author": "claude2"}
+{"question": "Ce suprapresiune trebuie realizată la ușile închise ale unei case de scări de evacuare protejate mecanic împotriva fumului, și ce viteză a aerului se cere la ușa nivelului incendiat?", "doc": "P118-1/2025", "articles": ["A.10.9.30"], "author": "claude2"}
+{"question": "Câte cicluri de funcționare trebuie să suporte o ușă cu autoînchidere din clasa C3?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1-tab3"], "author": "claude2"}
+{"question": "Ce distanță minimă trebuie păstrată între o construcție cu nivel de stabilitate la incendiu III și o clădire vecină de nivel IV sau V?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.2.1.2-tab1"], "author": "claude2"}
+{"question": "Ce usi trebuie montate la incaperea tampon a unei constructii cu parter, daca peretele antifoc dintre compartimente este EI-M 240?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.3.2.2.3.1-tab1"], "author": "claude2"}
+{"question": "clasa reactie la foc termoizolatie fatada gradinita parter", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.3.6.1.8-tab1"], "author": "claude2"}
+{"question": "Câți metri pătrați de arie utilă se iau pe persoană când se calculează numărul de utilizatori dintr-o locuință?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.5.9.2-tab1"], "author": "claude2"}
+{"question": "Cum se stabilește numărul simultan de persoane dintr-o sală de spectacole de teatru?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.5.9.2-tab8"], "author": "claude2"}
+{"question": "Până la câte niveluri deasupra terenului se poate construi o clădire civilă obișnuită, fără săli aglomerate, dacă are nivelul de stabilitate la incendiu IV?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.1.2.7-tab1"], "author": "claude2"}
+{"question": "Cu cât se scurtează lungimile de evacuare pe galeriile comune deschise spre atrium, în cazul camerelor de dormit din hoteluri sau cămine?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.1.5.4-tab1"], "author": "claude2"}
+{"question": "Ce rezistenta la foc trebuie sa aiba peretii casei de scari inchise intr-o cladire administrativa cu nivel de stabilitate III?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.2.2.6-tab1"], "author": "claude2"}
+{"question": "Ce tip de uși sunt admise pe coridoarele și holurile unei clădiri de sport cu nivelul II de stabilitate la incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-3.2.9.4-tab1"], "author": "claude2"}
+{"question": "lungime maxima evacuare coridor infundat cladire foarte inalta", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-4.2.5.6-tab1"], "author": "claude2"}
+{"question": "Ce rezistență la foc trebuie să aibă pereții holurilor dintr-o clădire cu săli aglomerate de tip S1 și nivel de stabilitate III?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-4.3.5.4-tab1"], "author": "claude2"}
+{"question": "Câți oameni se normează pe un flux de evacuare la o hală de producție cu risc mare de incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-6.1.5.15-tab1"], "author": "claude2"}
+{"question": "Ce uși se montează în golurile peretelui antifoc EI-M 180 dintr-o hală de producție cu sarcină termică între 840 și 1.680 MJ/m²?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-3-tab2"], "author": "claude2"}
+{"question": "baterii plumb stibiu peste 3% curent calcul", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-26-tab1"], "author": "claude2"}
+{"question": "Ce fel de materiale depozitate se încadrează în clasa cu periculozitate redusă și ce exemple se dau?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-86-tab1"], "author": "claude2"}
+{"question": "Ce punct de aprindere și ce punct inițial de fierbere are un lichid inflamabil din categoria 2 (L II)?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-87-tab1"], "author": "claude2"}
+{"question": "Ce creștere de temperatură și ce pierdere de masă se admit la încercarea SR EN ISO 1182 pentru ca un produs să fie încadrat în clasa A2 de reacție la foc?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-A.10.1.2.2-tab3"], "author": "claude2"}
+{"question": "Câte niveluri supraterane se admit într-o clădire existentă cu sală aglomerată S2 și nivel de stabilitate la incendiu II?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-A.10.4.1.31-tab2"], "author": "claude2"}
+{"question": "În ce clasă de periculozitate intră depozitarea talașului, a fibrelor vegetale sau a cartonului într-o construcție existentă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-A.10.6.2.19-tab1"], "author": "claude2"}
+{"question": "Până la ce înclinare față de verticală un element mai este considerat perete, inclusiv la fațadele cu pereți cortină?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:73"], "author": "claude2"}
+{"question": "Ce arată figura cu peretele rezistent la foc de la exterior, dispus la colțurile intrânde ale unei clădiri civile în formă de L, T sau U, când unghiul dintre aripi este sub 90°?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.3.2.1.9:4"], "author": "claude2"}
+{"question": "Cu ce pot fi înlocuite chenarele (bordările) din jurul golurilor de pe fațada termoizolată și ce lățime minimă au elementele de înlocuire?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-2.3.6.1.9:1"], "author": "claude2"}
+{"question": "cand nu mai e nevoie de diafragme deasupra plafonului suspendat la cladiri foarte inalte si ce rezistenta la foc are plafonul plin", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-4.2.4.3:2"], "author": "claude2"}
+{"question": "Cum se protejează o fațadă cu logii atunci când termoizolația exterioară este combustibilă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-14:14"], "author": "claude2"}
+{"question": "Cum se separă de restul clădirii o stație de pompare cu debit sub 4,2 l/s și ce ușă are spre interiorul clădirii?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-27:1"], "author": "claude2"}
+{"question": "evacuare intre compartimente incendiu incapere tampon ventilata suprapresiune", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-49:4"], "author": "claude2"}
+{"question": "La ce înălțime trebuie montat mijlocul de alarmare din punctul de staționare pentru persoanele cu dizabilități?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-58:1"], "author": "claude2"}
+{"question": "Cate cai de evacuare trebuie sa aiba o zona de refugiu dintr-o cladire de sanatate, cand toate zonele sunt in acelasi compartiment de incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-68:8"], "author": "claude2"}
+{"question": "exemple spatii open-space vestiare sas acces", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-84:0"], "author": "claude2"}
+{"question": "Când se consideră acoperit un atrium și în ce tipuri se împarte?", "doc": "P118-1/2025", "ids": ["p118-1-2025:sec-20:1"], "author": "claude2"}
+{"question": "Ce se consideră acoperiș plat, cu pantă mică, din punctul de vedere al unghiului de înclinare?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:0"], "author": "claude2"}
+{"question": "Ce criterii de performanță definesc clasa RE sau REI la planșeele și acoperișurile portante cu funcție de separare la foc?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:2"], "author": "claude2"}
+{"question": "Ce mansarde sau mezanine se considera niveluri (etaje) la calculul ariei nivelului?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:5"], "author": "claude2"}
+{"question": "Ce sunt căile exterioare de acces, intervenție și salvare?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:11"], "author": "claude2"}
+{"question": "Ce înseamnă clasa de reacție la foc minimă, de exemplu „minim C-s2,d0”?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:14"], "author": "claude2"}
+{"question": "De la ce cotă a ultimului nivel folosibil este considerată foarte înaltă o clădire civilă publică?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:18"], "author": "claude2"}
+{"question": "constructie deschisa definitie goluri 50% pereti exteriori", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:30"], "author": "claude2"}
+{"question": "Ce creșteri de temperatură pe fața neexpusă a canatului ușii se admit la criteriul de izolare termică I 1?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:33"], "author": "claude2"}
+{"question": "Ce debit maxim de aer poate scăpa printr-o ușă simplă cu etanșeitate la fum S 200?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:39"], "author": "claude2"}
+{"question": "Prin ce se deosebește un subsol de un demisol?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:42"], "author": "claude2"}
+{"question": "Ce perete poate fi considerat rezistent la explozie dacă nu se fac alte calcule?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:45"], "author": "claude2"}
+{"question": "De unde se masoara lungimea caii de evacuare cand incaperea este delimitata de pereti cu rezistenta la foc?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:48"], "author": "claude2"}
+{"question": "Ce înseamnă timp de evacuare?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:51"], "author": "claude2"}
+{"question": "Ce înseamnă flashover (inflamare generalizată) într-un incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:54"], "author": "claude2"}
+{"question": "Ce este învelitoarea unui acoperiș și cum se clasifică după modul de execuție?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:57"], "author": "claude2"}
+{"question": "Ce se înțelege prin nivel de referință al unei clădiri?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:63"], "author": "claude2"}
+{"question": "parcaj suprateran puternic ventilat natural conditii", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:72"], "author": "claude2"}
+{"question": "Ce este plenum-ul într-un spațiu de tip open-space?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:81"], "author": "claude2"}
+{"question": "Ce este scenariul de securitate la incendiu?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:84"], "author": "claude2"}
+{"question": "Ce se înțelege prin uși de evacuare?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:87"], "author": "claude2"}
+{"question": "Dacă într-o clădire existentă nu putem respecta tehnic toate prevederile normativului de stingere, ce soluție se acceptă prin proiect?", "doc": "P118/2-2013", "articles": ["1.1"], "author": "claude2"}
+{"question": "se poate monta in instalatie o butelie care pierde substanta de stingere?", "doc": "P118/2-2013", "articles": ["2.26"], "author": "claude2"}
+{"question": "Cum se asigură scoaterea persoanelor dintr-o încăpere care urmează să fie inundată cu agent de stingere în caz de incendiu?", "doc": "P118/2-2013", "articles": ["2.43"], "author": "claude2"}
+{"question": "hidrant interior îngropat pardoseală depozit stive înalte", "doc": "P118/2-2013", "articles": ["4.11"], "author": "claude2"}
+{"question": "Ce spațiu liber minim trebuie să rămână în jurul roții de manevră a robinetului dintr-o cutie de hidrant interior?", "doc": "P118/2-2013", "articles": ["4.23"], "author": "claude2"}
+{"question": "La ce înălțime față de sol și cu ce înclinare se montează racordul de alimentare al unei coloane uscate?", "doc": "P118/2-2013", "articles": ["5.6"], "author": "claude2"}
+{"question": "ce diametru minim trebuie sa aiba conducta pe care se monteaza un hidrant exterior Dn 100", "doc": "P118/2-2013", "articles": ["6.4"], "author": "claude2"}
+{"question": "Ce lichide antigel se pot introduce în conductele unei instalații cu sprinklere alimentate din apă potabilă?", "doc": "P118/2-2013", "articles": ["7.22"], "author": "claude2"}
+{"question": "Cum funcționează iarna o instalație cu sprinklere în sistem mixt și cu ce este umplută conducta din aval de supapa mixtă?", "doc": "P118/2-2013", "articles": ["7.33"], "author": "claude2"}
+{"question": "Pot fi montate sprinklere cu refulare plată deasupra unui tavan fals de tip grătar sau în rafturi?", "doc": "P118/2-2013", "articles": ["7.62"], "author": "claude2"}
+{"question": "Un luminator cu volum de peste 1 m³ deasupra tavanului trebuie protejat cu sprinklere sau există excepții?", "doc": "P118/2-2013", "articles": ["7.73"], "author": "claude2"}
+{"question": "Câte rânduri de sprinklere intermediare se montează pe fiecare nivel de raft, în funcție de lățimea rafturilor?", "doc": "P118/2-2013", "articles": ["7.88"], "author": "claude2"}
+{"question": "depozit HHS distanta maxima stiva sprinklere acoperis", "doc": "P118/2-2013", "articles": ["7.101"], "author": "claude2"}
+{"question": "Dacă un sprinkler se montează pe o conductă DN 80 racordată la magistrala de distribuție a apei, ce distanță minimă trebuie să existe între deflector și marginea magistralei?", "doc": "P118/2-2013", "articles": ["7.110"], "author": "claude2"}
+{"question": "Ce rezervoare sunt considerate expuse radiației de la un rezervor incendiat, la dimensionarea unei instalații cu sprinklere deschise?", "doc": "P118/2-2013", "articles": ["7.149"], "author": "claude2"}
+{"question": "Câte sprinklere cu răspuns rapid se presupune că intră în funcțiune sub un mezanin de maximum 4,5 m înălțime și la ce presiune de lucru?", "doc": "P118/2-2013", "articles": ["7.178"], "author": "claude2"}
+{"question": "Când nu se poate folosi apa pulverizată la stingere, în funcție de materialele din încăperea protejată?", "doc": "P118/2-2013", "articles": ["8.3"], "author": "claude2"}
+{"question": "Ce densitate minimă de pulverizare a apei se proiectează pentru stingerea incendiului pe suprafețele exterioare netede ale unui transformator electric cu ulei și pe celelalte suprafețe?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-10:0"], "author": "claude2"}
+{"question": "Ce densitate de pulverizare a apei se ia pentru protecția unui rezervor de lichide inflamabile cu diametrul de peste 80 m?", "doc": "P118/2-2013", "articles": ["8.40"], "author": "claude2"}
+{"question": "Ce supape de alarmă se admit împreună cu robinetul de oprire la supapa de control și semnalizare a unei instalații cu apă pulverizată?", "doc": "P118/2-2013", "articles": ["8.59"], "author": "claude2"}
+{"question": "Pentru ce fel de încăperi se poate aplica inundarea totală cu ceață de apă?", "doc": "P118/2-2013", "articles": ["9.16"], "author": "claude2"}
+{"question": "cate duze de rezerva trebuie prevazute pentru un sistem cu ceata de apa cu 200 de duze", "doc": "P118/2-2013", "articles": ["9.38"], "author": "claude2"}
+{"question": "Cât de lungă poate fi porțiunea izolată prin vane de sectorizare la o rețea inelară exterioară de apă pentru incendiu la un grup de clădiri?", "doc": "P118/2-2013", "articles": ["11.3"], "author": "claude2"}
+{"question": "racord Storz DN 100 rezervoare pompe mobile excepții", "doc": "P118/2-2013", "articles": ["12.11"], "author": "claude2"}
+{"question": "Ce surse de apă se consideră inepuizabile pentru alimentarea instalațiilor de stingere?", "doc": "P118/2-2013", "articles": ["12.21"], "author": "claude2"}
+{"question": "În ce moduri se pot porni pompele de incendiu, inclusiv fără intervenție umană?", "doc": "P118/2-2013", "articles": ["13.8"], "author": "claude2"}
+{"question": "stingere locală CO2 pentru ce incendii", "doc": "P118/2-2013", "articles": ["14.6"], "author": "claude2"}
+{"question": "Cum trebuie fixate și iluminate buteliile de CO2 montate în baterii?", "doc": "P118/2-2013", "articles": ["14.33"], "author": "claude2"}
+{"question": "se pot folosi tevi si fitinguri din fonta la instalatiile de stingere cu dioxid de carbon", "doc": "P118/2-2013", "articles": ["14.50"], "author": "claude2"}
+{"question": "La ce presiune minimă trebuie să reziste robinetele de pe butelii, respectiv robinetele de linie, la instalațiile cu CO2 stocat la înaltă presiune?", "doc": "P118/2-2013", "articles": ["14.66"], "author": "claude2"}
+{"question": "Ce informații trebuie să se afișeze pe panourile din camera de comandă a unei instalații cu CO2 de joasă presiune?", "doc": "P118/2-2013", "articles": ["14.96"], "author": "claude2"}
+{"question": "baterii rezervă CO2 comună pentru două incinte", "doc": "P118/2-2013", "articles": ["14.109"], "author": "claude2"}
+{"question": "Ce trebuie făcut dacă se schimbă volumul încăperii sau se adaugă obiecte fixe după proiectarea instalației de stingere cu gaz?", "doc": "P118/2-2013", "articles": ["15.13"], "author": "claude2"}
+{"question": "Care sunt concentrațiile volumice NOAEL și LOAEL pentru IG-100 în spațiul protejat?", "doc": "P118/2-2013", "articles": ["16.9"], "author": "claude2"}
+{"question": "Ce echipament de protecție trebuie să poarte personalul care intră într-un spațiu protejat cu HFC-227ea după ce a avut loc incendiul?", "doc": "P118/2-2013", "articles": ["17.6"], "author": "claude2"}
+{"question": "Cât este lungimea jetului de dioxid de carbon la o duză cu diametrul de 10 mm, la instalațiile de joasă presiune?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-14.104-tab1"], "author": "claude2"}
+{"question": "Ce debit de dioxid de carbon, în kg/min, poate transporta o conductă cu diametrul interior de 100 mm și lungimea de 90 m?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-14.120-tab1"], "author": "claude2"}
+{"question": "Cât sunt factorii Y și Z când presiunea scade la 41,4 bar, la instalațiile de înaltă presiune cu CO2 stocat la 51,7 bar?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-24-tab1"], "author": "claude2"}
+{"question": "Ce valori au factorii Y și Z la presiunea de 12 bar, pentru instalațiile de joasă presiune cu CO2 stocat la 20,7 bar?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-24-tab2"], "author": "claude2"}
+{"question": "Care sunt valorile D la puterea 1,25 și D la pătrat pentru o conductă cu diametrul nominal de 3 inch și diametrul interior de 3,068 inch?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-25-tab1"], "author": "claude2"}
+{"question": "Ce rezistență specifică are o conductă cu diametrul nominal de 50 mm la rugozitate medie, pentru calculul pierderilor de sarcină la instalațiile cu CO2?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-25-tab2"], "author": "claude2"}
+{"question": "Cât este volumul specific al IG-100 la temperatura de 40 °C?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-16.15-tab1"], "author": "claude2"}
+{"question": "IG-100 volum specific 90 °C", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-16.15-tab1"], "author": "claude2"}
+{"question": "Care metale au rată de coroziune zero în contact cu agentul de stingere HFC-227ea?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-17.11-tab2"], "author": "claude2"}
+{"question": "cat este volumul specific al substantei HCFC amestec A la 30 grade C", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-20.17-tab1"], "author": "claude2"}
+{"question": "Ce valoare are volumul specific al substanței HCFC amestec A la temperatura de 80 °C?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-20.17-tab1"], "author": "claude2"}
+{"question": "Cât este volumul specific al substanței de stingere FK-5-1-12 la 20 °C?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-22.27-tab1"], "author": "claude2"}
+{"question": "intensitate stingere pulbere lichide combustibile clasa L III", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-25.41-tab1"], "author": "claude2"}
+{"question": "Ce debit minim de curgere trebuie asigurat printr-o duză de refulare cu diametrul de 8 mm la presiunea de 0,4 MPa?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-69-tab1"], "author": "claude2"}
+{"question": "cate kg de dioxid de carbon se incarca intr-o butelie de 27 litri", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-89-tab1"], "author": "claude2"}
+{"question": "Până la ce concentrație volumică de stingere gazul IG-541 nu pune în pericol viața oamenilor?", "doc": "P118/2-2013", "articles": ["18.5"], "author": "claude2"}
+{"question": "Ce tip de sistem se foloseste la instalatiile de stingere a incendiilor cu argon?", "doc": "P118/2-2013", "articles": ["19.2"], "author": "claude2"}
+{"question": "Ce concentrație volumică de argon este necesară pentru inertizarea metanului și care este valoarea minimă de proiectare?", "doc": "P118/2-2013", "articles": ["19.14"], "author": "claude2"}
+{"question": "Cum trebuie fixate conductele pe care se montează duzele la o instalație cu argon, ca să reziste la efortul de la refulare?", "doc": "P118/2-2013", "articles": ["19.23"], "author": "claude2"}
+{"question": "masuri siguranta transport butelii HCFC/A", "doc": "P118/2-2013", "articles": ["20.19"], "author": "claude2"}
+{"question": "Cât timp pot rămâne oamenii într-un spațiu protejat cu HFC-125 la o concentrație între 7,5% și 10%?", "doc": "P118/2-2013", "articles": ["21.5"], "author": "claude2"}
+{"question": "Ce concentrație minimă de proiectare se ia la HFC-125 pentru incendii de clasă A și C?", "doc": "P118/2-2013", "articles": ["21.17"], "author": "claude2"}
+{"question": "Ce soluție se poate adopta pentru rețeaua de distribuție a HFC-125 în privința tronsoanelor și a buteliilor care le alimentează?", "doc": "P118/2-2013", "articles": ["21.24"], "author": "claude2"}
+{"question": "In ce stare si la ce presiuni se stocheaza substanta FK-5-1-12 in butelii la temperatura de 20 de grade?", "doc": "P118/2-2013", "articles": ["22.16"], "author": "claude2"}
+{"question": "Ce se urmărește pe timpul montajului în interiorul conductelor instalației cu FK-5-1-12, ca să nu fie stânjenită refularea substanței?", "doc": "P118/2-2013", "articles": ["22.30"], "author": "claude2"}
+{"question": "După racordarea buteliilor active și de rezervă cu FK-5-1-12 la colectoare, ce verificare trebuie făcută asupra bateriilor?", "doc": "P118/2-2013", "articles": ["22.41"], "author": "claude2"}
+{"question": "Ce temperatură maximă poate avea aerosolul refulat dacă în incinta protejată se află persoane?", "doc": "P118/2-2013", "articles": ["23.13"], "author": "claude2"}
+{"question": "La calculul masei de aerosoli necesare stingerii, ce goluri trebuie incluse în volumul spațiului protejat?", "doc": "P118/2-2013", "articles": ["23.34"], "author": "claude2"}
+{"question": "In dreptul carui fel de goluri sau echipamente nu se monteaza generatoarele de aerosoli pentru stingerea incendiilor?", "doc": "P118/2-2013", "articles": ["23.44"], "author": "claude2"}
+{"question": "Ce se verifică la recepția unei instalații de stingere cu generatoare de aerosoli?", "doc": "P118/2-2013", "articles": ["23.55"], "author": "claude2"}
+{"question": "Pentru ce tipuri de materiale sau echipamente nu se folosesc, în general, instalațiile de stingere cu spumă?", "doc": "P118/2-2013", "articles": ["24.3"], "author": "claude2"}
+{"question": "Ce armătură trebuie prevăzută la instalația cu spumă ca să nu se scurgă combustibilul din rezervor în instalația de producere a spumei?", "doc": "P118/2-2013", "articles": ["24.14"], "author": "claude2"}
+{"question": "La rezervoarele cu capac flotant, ce distanță minimă trebuie asigurată pentru digul de spumă și corpul rezervorului față de nivelul maxim admis de umplere?", "doc": "P118/2-2013", "articles": ["24.46"], "author": "claude2"}
+{"question": "Care este întârzierea maximă între detectarea incendiului și începerea deversării spumei de înaltă înfoiere pe care se bazează timpii de inundare?", "doc": "P118/2-2013", "articles": ["24.75"], "author": "claude2"}
+{"question": "Ce dimensiuni au fantele de supraveghere din pereții centralei de spumă dinspre rezervoarele protejate?", "doc": "P118/2-2013", "articles": ["24.91"], "author": "claude2"}
+{"question": "Se prevăd robinete de secționare pe conductele de spumă alimentate de la un distribuitor secundar aflat în cuva de retenție a rezervoarelor?", "doc": "P118/2-2013", "articles": ["24.101"], "author": "claude2"}
+{"question": "Ce poate rezulta dacă se stinge cu pulbere o scurgere necontrolabilă de lichide inflamabile sau gaze combustibile?", "doc": "P118/2-2013", "articles": ["25.8"], "author": "claude2"}
+{"question": "declansare sistem stingere pulbere automata sau manuala", "doc": "P118/2-2013", "articles": ["25.17"], "author": "claude2"}
+{"question": "Când se adoptă la stingerea cu pulberi soluția de inundare totală, în raport cu suprafața deschiderilor spațiului protejat?", "doc": "P118/2-2013", "articles": ["25.33"], "author": "claude2"}
+{"question": "Cât din volumul vaselor de stocare a pulberii poate fi ocupat cu pulbere?", "doc": "P118/2-2013", "articles": ["25.45"], "author": "claude2"}
+{"question": "Ce lungime maximă poate avea conducta de la rezervorul de stocare a pulberii până la distribuitor?", "doc": "P118/2-2013", "articles": ["25.61"], "author": "claude2"}
+{"question": "ce se face cu conductele dupa montare si inainte de montarea duzelor la instalatia de stingere cu pulbere", "doc": "P118/2-2013", "articles": ["25.80"], "author": "claude2"}
+{"question": "Din ce se compune un hidrant de abur și ce dimensiuni au conducta, furtunul și țeava de la capătul liber?", "doc": "P118/2-2013", "articles": ["26.5"], "author": "claude2"}
+{"question": "la ce inaltime fata de pardoseala se monteaza conductele interioare de distributie a aburului pentru stingere", "doc": "P118/2-2013", "articles": ["26.25"], "author": "claude2"}
+{"question": "Ce echipament de protecție trebuie să aibă personalul de exploatare al instalației de stingere și de la ce concentrație se poartă aparatul autonom de respirație?", "doc": "P118/2-2013", "articles": ["27.35"], "author": "claude2"}
+{"question": "verificare hidranti exteriori cutii protectie garnituri indicatoare", "doc": "P118/2-2013", "articles": ["28.4"], "author": "claude2"}
+{"question": "Cât timp trebuie să sune cel puțin un dispozitiv de alarmă cu motor hidraulic la verificarea săptămânală?", "doc": "P118/2-2013", "articles": ["28.16"], "author": "claude2"}
+{"question": "La controlul trimestrial, cum se verifică sursa de alimentare cu apă a instalației și ce se face cu sursa secundară de energie electrică de la generatoarele diesel?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-28.26:0"], "author": "claude2"}
+{"question": "Cum trebuie numerotate și marcate vanele instalației de stingere pentru o exploatare corectă?", "doc": "P118/2-2013", "articles": ["28.45"], "author": "claude2"}
+{"question": "La instalațiile cu dioxid de carbon cu recipienți de joasă presiune, la ce presiune trebuie să se deschidă supapele de siguranță?", "doc": "P118/2-2013", "articles": ["29.18"], "author": "claude2"}
+{"question": "Cât de des se verifică conținutul rezervoarelor la instalațiile cu gaze și ce pierdere de agent halocarbonat impune reumplerea sau înlocuirea rezervorului?", "doc": "P118/2-2013", "articles": ["29.31"], "author": "claude2"}
+{"question": "Când este permisă intrarea în funcțiune a instalației de stingere cu IG-100?", "doc": "P118/2-2013", "articles": ["29.54"], "author": "claude2"}
+{"question": "conducte HFC-227ea turtiri coroziune verificare impamantare", "doc": "P118/2-2013", "articles": ["29.74"], "author": "claude2"}
+{"question": "Cât de des se face revizia tehnică generală a instalației de stingere cu IG-541?", "doc": "P118/2-2013", "articles": ["29.86"], "author": "claude2"}
+{"question": "La ce distanță se apropie flacăra de detector când se testează instalația cu HCFC/A fără deversarea substanței în încăpere?", "doc": "P118/2-2013", "articles": ["29.94"], "author": "claude2"}
+{"question": "Unde se evacuează produsele rezultate din incendiu și scăpările de gaze din stația de butelii, la instalația de exhaustare?", "doc": "P118/2-2013", "articles": ["29.115"], "author": "claude2"}
+{"question": "cu acordul cui se pot inlocui generatoarele de aerosoli din instalatiile existente", "doc": "P118/2-2013", "articles": ["30.21"], "author": "claude2"}
+{"question": "control lunar instalatie stingere spuma baterii duze spumant concentrat", "doc": "P118/2-2013", "articles": ["31.23"], "author": "claude2"}
+{"question": "incercare stingere proba spumant concentrat trei ani", "doc": "P118/2-2013", "articles": ["31.40"], "author": "claude2"}
+{"question": "Ce se verifică la cazanele de abur care alimentează instalația de stingere a incendiului?", "doc": "P118/2-2013", "articles": ["33.3"], "author": "claude2"}
+{"question": "Cum se calculează debitul de apă pentru o clădire împărțită în mai multe compartimente de incendiu?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-74:0"], "author": "claude2"}
+{"question": "În afară de stingerea incendiilor, la ce alte scopuri pot fi folosite instalațiile cu IG-100?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-90:1"], "author": "claude2"}
+{"question": "Pentru ce clase de incendiu se recomandă HFC-125 și în ce caz este nevoie de avizul producătorului?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-99:0"], "author": "claude2"}
+{"question": "Ce date se consemnează în registrul de control al instalațiilor de detectare, alarmare și stingere a incendiilor?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-111:0"], "author": "claude2"}
+{"question": "La spumanții concentrați, care clasă de performanță la stingere este cea mai înaltă și care nivel de rezistență la reaprindere?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-104:0"], "author": "claude2"}
+{"question": "Ce panouri de avertizare trebuie afișate la loc vizibil în spațiile care pot fi inundate cu substanțe speciale de stingere?", "doc": "P118/2-2013", "articles": ["2.56"], "author": "claude2"}
+{"question": "panou avertizare usa statie butelii substante stingere", "doc": "P118/2-2013", "articles": ["2.57"], "author": "claude2"}
+{"question": "Din ce elemente este alcătuit căminul de alimentare directă cu apă a pompelor mobile de tip B, de exemplu pentru acționarea robinetului de golire?", "doc": "P118/2-2013", "ids": ["p118-2-2013:sec-16:0"], "author": "claude2"}
+{"question": "Cum se amplasează sprinklerele în jurul golurilor din tavan, de exemplu la scările rulante, și ce distanță maximă se admite față de deschidere?", "doc": "P118/2-2013", "articles": ["7.78"], "author": "claude2"}
+{"question": "Ce cerințe trebuie să îndeplinească rastelele cu rafturi, în privința deschiderilor și a spațiilor libere din jurul lor?", "doc": "P118/2-2013", "articles": ["7.167"], "author": "claude2"}
+{"question": "Cum se amplaseaza sprinklerele ESFR cand acoperisul este din grinzi si ferme metalice si ce inaltime maxima au deschiderile?", "doc": "P118/2-2013", "ids": ["p118-2-2013:art-7.181:1"], "author": "claude2"}
+{"question": "Când nu sunt considerate obstacole transportoarele cu role și pasarelele cu grătare la amplasarea sprinklerelor ESFR?", "doc": "P118/2-2013", "articles": ["7.186"], "author": "claude2"}
+{"question": "unghi pulverizare pulverizatoare inaltime amplasare sub 1 m", "doc": "P118/2-2013", "articles": ["8.46", "8.47"], "author": "claude2"}
+{"question": "Ce panouri de avertizare se afișează în incintele protejate cu dioxid de carbon și după ce standarde se inscripționează?", "doc": "P118/2-2013", "articles": ["14.94"], "author": "claude2"}
+{"question": "Ce indicator trebuie afișat la ușile spațiilor în care a lucrat instalația de stingere, ca să nu intre nimeni înainte de ventilare?", "doc": "P118/2-2013", "articles": ["27.41"], "author": "claude2"}
+{"question": "La ce tipuri de obiective nu se aplică normativul pentru instalațiile de detectare și alarmare la incendiu (de exemplu metrou, aeroporturi sau mine în subteran)?", "doc": "P118/3-2015", "articles": ["1.5"], "author": "claude2"}
+{"question": "Ce standard se recomandă pentru a asigura compatibilitatea între toate echipamentele unui sistem de alarmare la incendiu?", "doc": "P118/3-2015", "articles": ["3.2.8"], "author": "claude2"}
+{"question": "Ce zone pot fi exceptate de la supravegherea cu detectoare de incendiu, de exemplu o rampă de încărcare aflată în spațiu deschis?", "doc": "P118/3-2015", "articles": ["3.3.3"], "author": "claude2"}
+{"question": "arie maxima supravegheata ECS numar maxim detectoare", "doc": "P118/3-2015", "articles": ["3.3.5"], "author": "claude2"}
+{"question": "Ce funcții trebuie să rămână active dacă apare un scurtcircuit sau o întrerupere pe o cale de transmisie a instalației de detectare incendiu?", "doc": "P118/3-2015", "articles": ["3.3.14"], "author": "claude2"}
+{"question": "de la ce suprafata a zonei de detectare sunt obligatorii sistemele adresabile care localizeaza detectorul in alarma?", "doc": "P118/3-2015", "articles": ["3.3.17"], "author": "claude2"}
+{"question": "Un detector de fum cu cameră de ionizare este potrivit pentru incendii cu ardere mocnită sau pentru cele cu flacără și propagare rapidă?", "doc": "P118/3-2015", "articles": ["3.6.2.2"], "author": "claude2"}
+{"question": "Într-o încăpere unde se așteaptă doar arderea unor lichide precum alcoolul, ce tip de detectoare se montează în loc de cele de fum?", "doc": "P118/3-2015", "articles": ["3.6.2.8"], "author": "claude2"}
+{"question": "Ce detectoare de flacără se pot folosi când incendiul probabil este mocnit și produce fum dens, și când trebuie asociate cu alt tip de detector?", "doc": "P118/3-2015", "articles": ["3.6.4.8", "3.6.4.9"], "author": "claude2"}
+{"question": "daca aerul se poate stratifica intr-o incapere inalta, unde mai trebuie montate detectoare in afara de cele de la tavan?", "doc": "P118/3-2015", "articles": ["3.7.3.4"], "author": "claude2"}
+{"question": "distanță maximă detectoare fum hol îngust", "doc": "P118/3-2015", "articles": ["3.7.6.1"], "author": "claude2"}
+{"question": "La ce distanță minimă față de un cot sau o derivație se montează detectorul de fum într-o conductă de aer?", "doc": "P118/3-2015", "articles": ["3.7.8.4"], "author": "claude2"}
+{"question": "Câte orificii de aspirație poate avea cel mult o zonă de detectare la un detector de fum prin aspirație într-un depozit cu rafturi înalte?", "doc": "P118/3-2015", "articles": ["3.7.9.8"], "author": "claude2"}
+{"question": "Ce se face cu numărul detectoarelor de flacără dacă între sursa posibilă de incendiu și detector există obstacole?", "doc": "P118/3-2015", "articles": ["3.7.10.6"], "author": "claude2"}
+{"question": "De ce nu se montează detectoarele liniare de fum pe elemente supuse vibrațiilor sau dilatărilor termice, cum ar fi o grindă metalică?", "doc": "P118/3-2015", "articles": ["3.7.11.4"], "author": "claude2"}
+{"question": "Câte sirene de alarmare trebuie instalate minim într-o instalație de detectare incendiu, chiar dacă una singură ar asigura nivelul sonor necesar?", "doc": "P118/3-2015", "articles": ["3.8.2.1"], "author": "claude2"}
+{"question": "Cine are voie să folosească interfața de comandă a sistemului de adresare publică în caz de incendiu?", "doc": "P118/3-2015", "articles": ["3.8.3.2"], "author": "claude2"}
+{"question": "cu cati dB trebuie sa depaseasca mesajul vocal de alarma un zgomot care dureaza peste 30 de secunde?", "doc": "P118/3-2015", "articles": ["3.8.3.5"], "author": "claude2"}
+{"question": "În ce situații sunt justificate dispozitivele vizuale de alarmare, de exemplu în funcție de nivelul de zgomot din încăpere?", "doc": "P118/3-2015", "articles": ["3.8.4.1"], "author": "claude2"}
+{"question": "lămpi de avertizare optice intrări acces pompieri", "doc": "P118/3-2015", "articles": ["3.9.1.7"], "author": "claude2"}
+{"question": "Ce condiții trebuie respectate dacă centrala de detectare incendiu este împărțită în mai multe carcase amplasate în încăperi diferite?", "doc": "P118/3-2015", "articles": ["3.9.2.3"], "author": "claude2"}
+{"question": "Ce mijloc de comunicare trebuie să existe în încăperea unde se află centrala de detectare incendiu?", "doc": "P118/3-2015", "articles": ["3.9.2.7"], "author": "claude2"}
+{"question": "Ce semnale trebuie transmise cel puțin de la centrala de incendiu către un centru de supraveghere la distanță?", "doc": "P118/3-2015", "articles": ["3.9.2.10"], "author": "claude2"}
+{"question": "cum se evita alarmele false la detectoarele de fum din camere joase sub 3 m, de exemplu din cauza fumului de tigara?", "doc": "P118/3-2015", "articles": ["3.10.4"], "author": "claude2"}
+{"question": "Din ce este alcătuită sursa de rezervă a instalației de detectare incendiu și cum se face trecerea pe ea când dispare tensiunea din sursa de bază?", "doc": "P118/3-2015", "articles": ["4.1.4", "4.1.5"], "author": "claude2"}
+{"question": "Poate alimentarea instalației de detectare incendiu să depindă de separatorul general al clădirii?", "doc": "P118/3-2015", "articles": ["4.2.5"], "author": "claude2"}
+{"question": "Cum trebuie ținut cont de îmbătrânirea acumulatorilor când se evaluează capacitatea bateriilor de rezervă ale instalației de detectare?", "doc": "P118/3-2015", "articles": ["4.3.7"], "author": "claude2"}
+{"question": "Cum trebuie identificate cablurile circuitelor instalației de detectare incendiu, de exemplu prin culoarea mantalei sau prin marcaje?", "doc": "P118/3-2015", "articles": ["5.2.6"], "author": "claude2"}
+{"question": "Se pot monta cablurile instalației de detectare incendiu în canale tehnice unde se află circuite de peste 1000 V și la ce distanță de ele?", "doc": "P118/3-2015", "articles": ["5.2.11"], "author": "claude2"}
+{"question": "Ce rezistență la foc trebuie să aibă cablurile circuitelor de detecție și comandă dacă sistemul nu poate funcționa mai departe după apariția unui defect?", "doc": "P118/3-2015", "articles": ["5.2.15"], "author": "claude2"}
+{"question": "Ce fel de cabluri se folosesc pentru instalația de detectare incendiu în spațiile de producție și depozitare cu risc mare de incendiu?", "doc": "P118/3-2015", "articles": ["5.3.3"], "author": "claude2"}
+{"question": "Ce protecție trebuie să aibă liniile radiale care traversează pe orizontală o zonă nesupravegheată cu detectoare?", "doc": "P118/3-2015", "articles": ["5.3.8"], "author": "claude2"}
+{"question": "Ce rezistență la foc trebuie să aibă cablurile căilor de transmisie în clădirile foarte înalte și în spitale?", "doc": "P118/3-2015", "articles": ["5.3.13"], "author": "claude2"}
+{"question": "Ce trebuie verificat o dată pe an la sistemul de detectare incendiu?", "doc": "P118/3-2015", "ids": ["p118-3-2015:art-5.6.5:2"], "author": "claude2"}
+{"question": "marcare detectoare dimensiune caracter distanță de citire", "doc": "P118/3-2015", "articles": ["5.8.2"], "author": "claude2"}
+{"question": "Câte detectoare de căldură sunt necesare pentru o încăpere de 30 m x 20 m cu tavan orizontal și înălțimea de 6 m?", "doc": "P118/3-2015", "ids": ["p118-3-2015:sec-9:0"], "author": "claude2"}
+{"question": "Care este temperatura maximă de răspuns static pentru un detector de căldură din clasa C?", "doc": "P118/3-2015", "ids": ["p118-3-2015:art-3.6.3.4-tab1"], "author": "claude2"}
+{"question": "Câte alveole de tavan formate de grinzi revin unui detector de căldură cu aria maximă de 30 m², dacă fiecare alveolă are între 9 și 12 m²?", "doc": "P118/3-2015", "ids": ["p118-3-2015:art-3.7.5.3-tab1"], "author": "claude2"}
+{"question": "latura maximă detector flacără clasa 2", "doc": "P118/3-2015", "ids": ["p118-3-2015:art-3.7.10.7-tab1"], "author": "claude2"}
+{"question": "Ce reprezintă litera L în schema generală a componentelor unei instalații de detectare, semnalizare și avertizare incendiu?", "doc": "P118/3-2015", "articles": ["3.2.1"], "author": "claude2"}
+{"question": "De la ce înălțime a grinzilor fiecare alveolă din tavan se consideră o arie separată care trebuie supravegheată cu detectoare?", "doc": "P118/3-2015", "articles": ["3.7.5.4"], "author": "claude2"}
+{"question": "Dacă aerul se introduce prin tavane false perforate, ce rază în jurul detectorului de fum trebuie să rămână fără perforații?", "doc": "P118/3-2015", "articles": ["3.7.7.9"], "author": "claude2"}
+{"question": "Cât trebuie să fie distanța minimă dintre fasciculul optic al unui detector liniar de fum și pereți, și cât poate fi cel mult distanța dintre emițător și receptor?", "doc": "P118/3-2015", "articles": ["3.7.11.8"], "author": "claude2"}
+{"question": "cate detectoare de fum trebuie pentru o incinta de 30 x 20 m cu inaltimea de 12 m si tavan orizontal?", "doc": "P118/3-2015", "ids": ["p118-3-2015:sec-7:0"], "author": "claude2"}
+{"question": "numar detectoare fum 600 mp tavan 6 m", "doc": "P118/3-2015", "ids": ["p118-3-2015:sec-8:0"], "author": "claude2"}
+{"question": "Cum se definește un afișaj alfanumeric în terminologia instalațiilor de detectare incendiu?", "doc": "P118/3-2015", "articles": ["2.2"], "author": "claude2"}
+{"question": "Ce înseamnă anularea semnalizării audibile pe o centrală de incendiu?", "doc": "P118/3-2015", "articles": ["2.5"], "author": "claude2"}
+{"question": "Cum se definește un circuit în raport cu echipamentul de control și semnalizare al unui sistem de detectare și alarmă la incendiu?", "doc": "P118/3-2015", "articles": ["2.9"], "author": "claude2"}
+{"question": "Ce se înțelege prin condiție de funcționare normală a unui sistem de detectare incendiu?", "doc": "P118/3-2015", "articles": ["2.13"], "author": "claude2"}
+{"question": "Cum se definește un detector optic de fum?", "doc": "P118/3-2015", "articles": ["2.19.2.3"], "author": "claude2"}
+{"question": "Ce se înțelege prin detector neresetabil?", "doc": "P118/3-2015", "articles": ["2.19.15"], "author": "claude2"}
+{"question": "Care este diferența dintre un detector resetabil local și unul resetabil de la distanță?", "doc": "P118/3-2015", "articles": ["2.19.18.2", "2.19.18.3"], "author": "claude2"}
+{"question": "distanță de căutare detector neadresabil", "doc": "P118/3-2015", "articles": ["2.22"], "author": "claude2"}
+{"question": "Pentru ce este folosit echipamentul de control și semnalizare (ECS) și cum este definit în normativ?", "doc": "P118/3-2015", "articles": ["2.30"], "author": "claude2"}
+{"question": "Cum se definește inspecția unui sistem de detectare și alarmă la incendiu?", "doc": "P118/3-2015", "articles": ["2.35"], "author": "claude2"}
+{"question": "prima stare de alarmă ECS definiție", "doc": "P118/3-2015", "articles": ["2.45"], "author": "claude2"}
+{"question": "ce inseamna punere in functiune a unui sistem de detectare incendiu", "doc": "P118/3-2015", "articles": ["2.50"], "author": "claude2"}
+{"question": "Ce înseamnă termenul service pentru un sistem de detectare incendiu și ce lucrări include?", "doc": "P118/3-2015", "articles": ["2.59"], "author": "claude2"}
+{"question": "Cum se definește timpul de intervenție la incendiu?", "doc": "P118/3-2015", "articles": ["2.69"], "author": "claude2"}
+{"question": "Cât la sută din suprafața peretelui pot reprezenta vitrările care separă un atrium de restul unei clădiri existente?", "doc": "P118-1/2025", "articles": ["A.10.2.4.40"], "author": "claude2"}
+{"question": "care este latimea maxima a unei usi de evacuare inainte sa fie impartita cu montanti", "doc": "P118-1/2025", "articles": ["A.10.2.5.66"], "author": "claude2"}
