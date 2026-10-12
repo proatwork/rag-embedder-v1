@@ -36,7 +36,6 @@ From Python, ask() does the same and returns an Answer; main() shows how the ind
 
 import argparse
 import json
-import os
 import re
 import sys
 import itertools
@@ -44,6 +43,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import settings
 from docx_to_txt import CELL_SEPARATOR
 from embed_chunks import API_MODEL, Embedder, check_answered_by, endpoint, post_json
 from json_to_chunks import ARTICLE_PREFIX, LINE_SEPARATOR, STATUS_IN_FORCE, STATUS_REPEALED, STATUS_UNVERIFIED, load_config
@@ -56,7 +56,7 @@ from search_tool import (
     ARG_ARTICLE, ARG_COUNT, ARG_NORM, ARG_QUERY, EXCERPT_SEPARATOR, MAX_SEARCHES, TOOL_NAME, Search, SearchSession, excerpts,
 )
 
-DEFAULT_CHAT_MODEL = "qwen/qwen3.8-27b"  # the language model's id on the server
+DEFAULT_CHAT_MODEL = settings.chat_model()  # the language model's id on the server, from settings.env
 CHAT_PATH = "/v1/chat/completions"  # of the OpenAI API
 KEY_HIDDEN = "***"
 AUTHORIZATION = "Authorization"  # a hosted API wants the key in this header, as "Bearer <key>"
@@ -218,15 +218,15 @@ def prepare(
 
 
 def api_key_from(variable: str | None) -> str | None:
-    """The API key kept in the environment variable `variable` (it is never given on the command line, which shells
-    remember); None when no variable is named. Raises ConversionError when the variable is empty or not set."""
+    """The API key kept under the name `variable` in the environment or in settings.env (it is never given on the
+    command line, which shells remember); None when no name is given. Raises ConversionError when it is empty or not set."""
     if variable is None:
         return None
-    key = os.environ.get(variable, "").strip()
+    key = settings.setting(variable)
     if not key:
-        raise ConversionError(f"the environment variable {variable} is not set or is empty: export it with the API key first")
+        raise ConversionError(f"{variable} is not set or is empty: write the API key under that name into {settings.SETTINGS_FILE.name}, or export it")
     if not key.isascii() or not key.isprintable() or any(character.isspace() for character in key):
-        raise ConversionError(f"the environment variable {variable} holds something that cannot be a key (spaces, line breaks or odd characters)")
+        raise ConversionError(f"{variable} holds something that cannot be a key (spaces, line breaks or odd characters)")
     return key
 
 
@@ -413,9 +413,9 @@ def main() -> None:
     parser.add_argument("question", help="the question to answer")
     add_result_arguments(parser, "give the language model")
     parser.add_argument("--chat-model", default=DEFAULT_CHAT_MODEL, help="the language model's id on the server (default: %(default)s)")
-    parser.add_argument("--chat-server", help="address of the server that runs the language model, if not --server (http://host:port)")
+    parser.add_argument("--chat-server", default=settings.setting(settings.CHAT_SERVER) or None, help=f"address of the server that runs the language model (http://host:port); default: {settings.CHAT_SERVER} of settings.env, else --server")
     parser.add_argument("--chat-path", default=CHAT_PATH, help="path of the chat endpoint on the chat server (default: %(default)s); a hosted OpenAI-style API often uses /chat/completions")
-    parser.add_argument("--chat-key-env", metavar="VARIABLE", help="name of the environment variable that holds the chat server's API key; it is sent as a Bearer token (never give the key itself here)")
+    parser.add_argument("--chat-key-env", metavar="VARIABLE", help="the name the chat server's API key is kept under, in settings.env or the environment; it is sent as a Bearer token (never give the key itself here)")
     parser.add_argument("--instructions", type=Path, default=INSTRUCTIONS_FILE, help="file with the rules for the language model (default: %(default)s)")
     parser.add_argument("--show-prompt", action="store_true", help="print what the language model would be sent, and do not ask it")
     parser.add_argument("--single-search", action="store_true", help="do not let the model search: hand it the chunks closest to the question's own words")

@@ -1,7 +1,32 @@
 # Commands
 
-Run from `/Users/proatwork/htdocs/proatwork/ai-dev/embedding-test`. Sources: `NormativeIncendiu/` (2 PDFs, 1 DOCX).
+Run from the project folder. Sources: `NormativeIncendiu/` (2 PDFs, 1 DOCX).
 Every command is run with `venvs/bin/python`. More background on each option is in `MANUAL.md`.
+
+## Settings: this machine's addresses, ports and keys
+
+They are in one file, `settings.env`, which is not committed. Make it from the pattern and change what differs:
+
+```sh
+cp settings.example.env settings.env && chmod 600 settings.env
+```
+
+| Name | Default | Meaning |
+|---|---|---|
+| `NORMS_EMBEDDING_SERVER` | `http://127.0.0.1:1234` | The server that runs the embedding model (LM Studio, or `llama-server`). The default of every `--server`. |
+| `NORMS_CHAT_SERVER` | the embedding server | The server that runs the language model, for `ask.py` and the chatbot. |
+| `NORMS_CHAT_MODEL` | `qwen/qwen3.8-27b` | The language model's id on the chat server. The default of `--chat-model`. |
+| `NORMS_CHATBOT_PORT` | `8765` | The port of the chatbot's page. |
+| `NORMS_MCP_PORT` | `8766` | The port of the MCP server. |
+| `NORMS_MCP_KEY` | none | The key of the MCP server (step 9). |
+| any name you choose | none | The key of a hosted chat API; `--chat-key-env` gives `ask.py` the name. |
+
+A value is looked for in this order: the script's own option (`--server`, `--port`, ...), then the environment
+(`export NORMS_EMBEDDING_SERVER=...`), then `settings.env`, then the default. Where the tables below say
+"`settings.env`" as a default, they mean the value found that way. A shell can read the same file
+(`set -a; . ./settings.env; set +a`), and so can systemd (`EnvironmentFile=`). With `NORMS_SETTINGS_FILE` another
+file is read instead; set to nothing, none is. The embedding model itself (`text-embedding-bge-m3`) is not a setting:
+the vectors are bound to it.
 
 Steps 1–4 share three options:
 
@@ -100,7 +125,7 @@ run only embeds the chunks whose text changed (`0 embedded, N reused`).
 
 | Option | Default | Meaning |
 |---|---|---|
-| `--server URL` | `http://192.168.0.157:1234` | The server that runs the embedding model. Must speak the OpenAI embeddings API, as LM Studio does. Give the whole address, `http://` and port included. |
+| `--server URL` | `settings.env` | The server that runs the embedding model. Must speak the OpenAI embeddings API, as LM Studio does. Give the whole address, `http://` and port included. |
 | `--model ID` | `text-embedding-bge-m3` | The model's id on that server, as LM Studio lists it. Under another id the model-card check is skipped, and vectors made under one id are not reused under another. |
 | `--config FILE` | `chunk-config.json` | Checked as in step 3, and read for `embed_field`. |
 
@@ -123,7 +148,7 @@ venvs/bin/python search.py --chunks-dir docs_processed/chunks --article 2.3.2.1.
 | `--top N` | `5` | How many results to show. |
 | `--doc CODE` | all norms | Only this norm, by its code. Also useful with `--article`: a number such as `4.1` exists in several norms. |
 | `--article NUMBER` | | List every chunk holding this article or paragraph number, tables included, instead of searching. The server is not asked. |
-| `--server URL` | `http://192.168.0.157:1234` | The embedding server, which embeds the question. |
+| `--server URL` | `settings.env` | The embedding server, which embeds the question. |
 | `--config FILE` | `chunk-config.json` | As in step 4. |
 
 Each result shows its score (1 is identical text; compare scores only with each other), the chunk id, the chunk kind and flags,
@@ -175,7 +200,7 @@ an upper bound.
 ## 7. Ask the LLM (answers written from your chunks)
 
 ```sh
-venvs/bin/python ask.py --chunks-dir docs_processed/chunks --vectors-dir docs_processed/vectors --chat-server http://192.168.0.157:1234 --chat-model qwen/qwen3.8-27b "Ce rezistență la foc are un perete antifoc?"
+venvs/bin/python ask.py --chunks-dir docs_processed/chunks --vectors-dir docs_processed/vectors --chat-server http://127.0.0.1:1234 --chat-model qwen/qwen3.8-27b "Ce rezistență la foc are un perete antifoc?"
 ```
 
 The LLM at `--chat-server` is given one tool, `search_norms`, and searches the chunks for itself: it writes the query in its
@@ -207,14 +232,14 @@ model's own: check it against those chunks.
 | `question` | | The question to answer (last, in quotes). |
 | `--chunks-dir DIR` | | **Required.** As in step 5. |
 | `--vectors-dir DIR` | | **Required.** |
-| `--chat-server URL` | same as `--server` | The server that runs the LLM. Leave it out if one server runs both models. |
-| `--chat-model ID` | `qwen/qwen3.8-27b` | The LLM's id on that server, as `<chat-server>/v1/models` lists it. The script stops if another model answers. |
-| `--server URL` | `http://192.168.0.157:1234` | The server with the embedding model (`text-embedding-bge-m3`) that embeds the question. |
+| `--chat-server URL` | `settings.env`, else `--server` | The server that runs the LLM. Leave it out if one server runs both models. |
+| `--chat-model ID` | `settings.env` | The LLM's id on that server, as `<chat-server>/v1/models` lists it. The script stops if another model answers. |
+| `--server URL` | `settings.env` | The server with the embedding model (`text-embedding-bge-m3`) that embeds the question. |
 | `--top N` | `5` | How many chunks a search gives the LLM when it does not ask for a number itself (it may ask for up to 20). With `--single-search`: how many chunks it is handed. More chunks give more context and need more context length loaded. |
 | `--doc CODE` | all norms | Only chunks of this norm: the LLM can search no other. |
 | `--single-search` | off | Do not let the LLM search: find the chunks closest to the question's own words once and hand them over. |
 | `--chat-path PATH` | `/v1/chat/completions` | The chat endpoint's path on the chat server. LM Studio uses the default; many hosted OpenAI-style APIs use `/chat/completions`. |
-| `--chat-key-env VARIABLE` | none | The **name** of an environment variable that holds the chat server's API key. It is sent as `Authorization: Bearer <key>`. The key itself is never an option, because shells remember what you type. With a key, the model that answers is not compared with `--chat-model` (a hosted API may answer under the name an alias resolves to). |
+| `--chat-key-env VARIABLE` | none | The **name** the chat server's API key is kept under, in `settings.env` or the environment. It is sent as `Authorization: Bearer <key>`. The key itself is never an option, because shells remember what you type. With a key, the model that answers is not compared with `--chat-model` (a hosted API may answer under the name an alias resolves to). |
 | `--instructions FILE` | `ask-instructions.md` | The rules the LLM is given (see below). |
 | `--show-prompt` | off | Print what the LLM would be sent first and ask nobody: the rules, the question and the tool (with `--single-search`: the rules, the chunks and the question; the embedding server is then still used). |
 | `--conversation FILE` | none | Keep a conversation in this JSON file: the earlier questions and answers in it are sent to the LLM before the question, so a follow-up ("și la clădiri înalte?") is understood and searched for in full, and the new pair is appended. The file holds the plain questions and the answers as user / assistant messages (not the excerpts, which would grow the prompt by thousands of tokens a turn); only the newest 12 messages are sent. With `--single-search` the chunks are still found from the new question alone, so a follow-up that names nothing may find the wrong chunks. To start a new conversation, remove the file or give a new name. |
@@ -259,7 +284,7 @@ that still uses them needs the new ones.) None of this changes the chunk's text,
 **A hosted LLM instead of LM Studio** (here BytePlus ModelArk, Coding Plan). The embeddings stay on LM Studio (`--server`); only the answer is written elsewhere.
 
 ```sh
-export ARK_API_KEY='<your key>'     # in your own terminal; do not paste the key into a command or a file in this folder
+# first write the key into settings.env, on a line of its own:  ARK_API_KEY=<your key>
 venvs/bin/python ask.py --chunks-dir docs_processed/chunks --vectors-dir docs_processed/vectors --chat-server https://ark.ap-southeast.bytepluses.com/api/coding/v3 --chat-path /chat/completions --chat-key-env ARK_API_KEY --chat-model ark-code-latest "Ce rezistență la foc are un perete antifoc?"
 ```
 
@@ -290,7 +315,7 @@ field, or with the ↻ button; embedding models are left out), *API style*, *Cha
 
 - **Search** *The model searches*: the model gets the tool of step 7 and searches for itself, up to 5 times a question; a follow-up
   is searched in full. It needs the OpenAI style, because LM Studio's own API takes no tools. For the model in LM Studio, set
-  *API style* OpenAI-style and *Chat server* `http://192.168.0.157:1234/v1` (with `/v1`: without it LM Studio answers
+  *API style* OpenAI-style and *Chat server* `http://127.0.0.1:1234/v1` (with `/v1`: without it LM Studio answers
   "Unexpected endpoint", and the page says to add it). If the model does not search (it answers without a search that found
   anything, or writes its call as text), the page says so, clears the answer and the sources, and the question is searched once
   instead. With this style LM Studio sends no token counts, so the numbers under an answer are estimates (`~`).
@@ -320,9 +345,9 @@ field, or with the ↻ button; embedding models are left out), *API style*, *Cha
 | `--images-root DIR` | parent of `--chunks-dir` | Pictures are shown only from inside this folder. |
 | `--instructions FILE` | `ask-instructions.md` | The rules for the model, as in step 7. |
 | `--config FILE` | `chunk-config.json` | As in step 4. |
-| `--server URL` | `http://192.168.0.157:1234` | The page's default embedding server. |
-| `--chat-server URL` | `http://192.168.0.157:1234` | The page's default chat server (the same machine as the embedding model). |
-| `--port N` | `8765` | The page listens on this machine only (`127.0.0.1`). |
+| `--server URL` | `settings.env` | The page's default embedding server. |
+| `--chat-server URL` | `settings.env` | The page's default chat server (the embedding server's, unless set). |
+| `--port N` | `settings.env` (`8765`) | The page listens on this machine only (`127.0.0.1`). |
 
 The chat server must be LM Studio 0.4 or newer (its native `/api/v1/chat`). The chunks, the vectors and the two instructions files (`ask-instructions.md`, `ask-tool-instructions.md`) are read once when the script starts: restart it
 after re-chunking, re-embedding or editing the rules. If an answer is empty, the model used up its room thinking: load it with a larger context length.
@@ -335,24 +360,23 @@ answer; its OpenAI-style API is at `http://127.0.0.1:1235/api/coding/v3`, where 
 the chatbot's model has (`query`, `norm`, `article`, `count`). Claude writes the searches and the answer; this server
 only returns excerpts. It works in every Claude: claude.ai, Claude Desktop, the phone app and Claude Code.
 
-Make the key **once** and keep it, in a file only you can read, outside this folder:
+Make the key **once** and keep it: print one, and write it into `settings.env` as `NORMS_MCP_KEY=<the key>`.
 
 ```sh
-(umask 077; mkdir -p ~/.config && openssl rand -hex 16 > ~/.config/norms-mcp.key)
+openssl rand -hex 16
 ```
 
-Then, every time the server is started:
+Then start the server; the key, the port and the embedding server come from `settings.env`:
 
 ```sh
-export NORMS_MCP_KEY="$(cat ~/.config/norms-mcp.key)"
-venvs/bin/python mcp_server.py --server http://127.0.0.1:1234
+venvs/bin/python mcp_server.py
 ```
 
 It answers at `http://127.0.0.1:8766/mcp`, on this machine only. Two things must be in place around it:
 
 - **The key.** Every HTTP request must carry `Authorization: Bearer <key>`; anything else is answered `401`. The key is
-  read from the environment variable `NORMS_MCP_KEY` (at least 32 plain characters), never from the command line, and
-  the server does not start without it. Whoever has the key can search. A new key means restarting the server and
+  `NORMS_MCP_KEY` of `settings.env` or of the environment (at least 32 plain characters), never an option on the
+  command line, and the server does not start without it. Whoever has the key can search. A new key means restarting the server and
   adding the connector again in Claude, which is why it is made once and kept. The key is the only gate: the server
   does not check under which name (`Host`) or from which page (`Origin`) a request comes, so it needs no option for
   the proxy's name.
@@ -364,8 +388,8 @@ It answers at `http://127.0.0.1:8766/mcp`, on this machine only. Two things must
 
 | Option | Default | Meaning |
 |---|---|---|
-| `--server URL` | `http://192.168.0.157:1234` | The embedding server, as in step 5. On the Ubuntu box: `http://127.0.0.1:1234`. |
-| `--port N` | `8766` | The server listens on this machine only (`127.0.0.1`). |
+| `--server URL` | `settings.env` | The embedding server, as in step 5. |
+| `--port N` | `settings.env` (`8766`) | The server listens on this machine only (`127.0.0.1`). |
 | `--top N` | `5` | Excerpts a call gets when it does not say (1–20). |
 | `--chunks-dir DIR` | `docs_processed/chunks` | The chunk files of step 3. |
 | `--vectors-dir DIR` | `docs_processed/vectors` | The vector files of step 4. |
@@ -380,7 +404,7 @@ edited: to change the address or the key, remove it and add it again.
 **Add it to Claude Code:**
 
 ```sh
-claude mcp add --transport http norms https://norms.example.com/mcp --header "Authorization: Bearer $(cat ~/.config/norms-mcp.key)"
+(set -a; . ./settings.env; set +a; claude mcp add --transport http norms https://norms.example.com/mcp --header "Authorization: Bearer $NORMS_MCP_KEY")
 ```
 
 How it differs from the chatbot:
@@ -401,8 +425,8 @@ re-embedding or editing the rules. The server keeps nothing between two requests
 venvs/bin/python -m unittest discover -s tests -v
 ```
 
-278 tests: the picture references (`tests/test_chunk_images.py`), the citation and the status of a norm (`tests/test_citation.py`), the instructions file (`tests/test_ask_instructions.py`), the conversation (`tests/test_ask_conversation.py`), the chat path and API key options (`tests/test_ask_chat_options.py`), the search tool (`tests/test_search_tool.py`: numbering across searches, wrong calls, the limit and a session without one, the lookup by number, pictures said to be shown or not), the model searching through `ask.py` (`tests/test_ask_tools.py`: the rounds, the fallback to a single search, the search rules file, the command line) and the MCP server (`tests/test_mcp_server.py`: the tool as an MCP client is told of it, calls in the same process and over HTTP on a free port of this machine in both protocol versions, the key, failures inside a search, the command line). `discover -s tests` looks for tests in the `tests` folder and
-`-v` lists each one. No server and no download needed.
+305 tests: the settings file (`tests/test_settings.py`: how it is read, what wins over what, the defaults, that no script names a private address), the picture references (`tests/test_chunk_images.py`), the citation and the status of a norm (`tests/test_citation.py`), the instructions file (`tests/test_ask_instructions.py`), the conversation (`tests/test_ask_conversation.py`), the chat path and API key options (`tests/test_ask_chat_options.py`), the search tool (`tests/test_search_tool.py`: numbering across searches, wrong calls, the limit and a session without one, the lookup by number, pictures said to be shown or not), the model searching through `ask.py` (`tests/test_ask_tools.py`: the rounds, the fallback to a single search, the search rules file, the command line) and the MCP server (`tests/test_mcp_server.py`: the tool as an MCP client is told of it, calls in the same process and over HTTP on a free port of this machine in both protocol versions, the key, failures inside a search, the command line). `discover -s tests` looks for tests in the `tests` folder and
+`-v` lists each one. No server and no download needed, and this machine's own `settings.env` is not read by the tests that depend on a setting.
 
 ```sh
 venvs/bin/python -m unittest discover -s chatbot/tests -v

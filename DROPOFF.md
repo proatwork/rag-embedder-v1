@@ -6,6 +6,19 @@ State as of **2026-10-12**, written on the Mac. Read this first, then `COMMANDS.
 **The two "Update" sections below are the current state**; the rest is the findings and the plan they grew from, kept
 for the reasons it gives.
 
+## Update: one settings file (branch `poc`)
+
+- **Addresses, ports and keys are in `settings.env`**, read by `settings.py` (see *Settings* in `COMMANDS.md`). The
+  file is not committed; `settings.example.env` is the committed pattern. No script holds an address of the local
+  network any more: the default is `http://127.0.0.1:1234`. What this file says below about hardcoded addresses,
+  about `--server` being needed on the box, and about the key in `~/.config/norms-mcp.key` is how it was before.
+- **Every machine has its own `settings.env`**: copy the code with `--exclude settings.env`, or the box's server
+  address and key are overwritten by the Mac's.
+- **The MCP key** is `NORMS_MCP_KEY` in the box's `settings.env`, the same value as before (Claude's connector holds
+  it). Do not make a new one unless the connector is to be added again.
+- **This file still names the box, its address and the public name of the server.** Take it out, with the history,
+  before the repository is made public.
+
 ## Update, later on 2026-10-12: the box is set up for search
 
 Done from the Mac over SSH, after the rest of this file was written. Where the two disagree, this section is right.
@@ -131,7 +144,7 @@ The code itself is portable: no absolute Mac paths, no symlinks, no odd file nam
 Copy command (not run; `OLD/` is 1.1 GB, drop its exclude to take it along):
 
 ```sh
-rsync -av --exclude venvs --exclude OLD --exclude __pycache__ --exclude .DS_Store --exclude .claude /Users/proatwork/htdocs/proatwork/ai-dev/embedding-test/ user@box:embedding-test/
+rsync -av --exclude venvs --exclude OLD --exclude __pycache__ --exclude .DS_Store --exclude .claude --exclude settings.env /Users/proatwork/htdocs/proatwork/ai-dev/embedding-test/ user@box:embedding-test/
 ```
 
 ## Proposed, not approved: five changes for portability

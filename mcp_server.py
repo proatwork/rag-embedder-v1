@@ -1,8 +1,7 @@
 """The search as an MCP server, so that Claude (claude.ai, Claude Desktop, the phone app, Claude Code) can search the norms.
 
 Usage (run with the virtual environment's interpreter):
-    export NORMS_MCP_KEY="$(cat ~/.config/norms-mcp.key)"  # the key every request must carry (see below)
-    venvs/bin/python mcp_server.py --server http://127.0.0.1:1234
+    venvs/bin/python mcp_server.py                         # the key, the port and the embedding server are in settings.env
     venvs/bin/python mcp_server.py --port 9000 --chunks-dir CHUNKS --vectors-dir VECTORS
 
 One tool, search_norms, as search_tool.py describes it: a search by meaning (`query`) or an article fetched by its
@@ -14,11 +13,11 @@ The server speaks MCP's Streamable HTTP at /mcp and listens on this machine only
 of it holds the certificate and passes the requests on. A call is answered as plain JSON; a client may also keep a GET
 open for messages from the server (none are ever sent), which is why the proxy must not buffer the replies.
 
-A request without `Authorization: Bearer <key>` is answered 401. The key is read from the environment (NORMS_MCP_KEY),
-never from the command line, where every user of the machine could read it; without a key the server does not start.
-Make the key once and keep it, in a file only its owner can read and outside this folder: a new key means adding the
-server to Claude again.
-    (umask 077; mkdir -p ~/.config && openssl rand -hex 16 > ~/.config/norms-mcp.key)
+A request without `Authorization: Bearer <key>` is answered 401. The key is NORMS_MCP_KEY of settings.env (see
+settings.py), or of the environment; never an option on the command line, where every user of the machine could read
+it. Without a key the server does not start. Make the key once and keep it: a new key means adding the server to
+Claude again. settings.env is not committed; keep it readable by its owner only (chmod 600 settings.env).
+    openssl rand -hex 16
 The key is the only gate: the Host and Origin headers of a request are not checked, since a page of another site
 cannot send the key, and so the server answers under whatever name the proxy is reached.
 
@@ -29,9 +28,9 @@ used the call is answered with an error, and fetching by number still works.
 import argparse
 import functools
 import hmac
-import os
 import sys
 import traceback
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -45,6 +44,7 @@ from starlette.responses import PlainTextResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 import ask
+import settings
 from embed_chunks import add_server_argument
 from json_to_chunks import CONFIG_FILE, load_config
 from pipeline_common import ConversionError
@@ -61,9 +61,9 @@ SERVER_VERSION = "1.0"
 TOOL_TITLE = "Search the fire-safety norms"
 SERVER_INSTRUCTIONS = f"Call {TOOL_NAME} for any question about the Romanian fire-safety norms; its description says how to search and how to cite."
 HOST = "127.0.0.1"  # this machine only: the proxy is the way in
-DEFAULT_PORT = 8766
+DEFAULT_PORT = settings.mcp_port()  # this machine's own, from settings.env
 MCP_PATH = "/mcp"
-KEY_VARIABLE = "NORMS_MCP_KEY"
+KEY_VARIABLE = settings.MCP_KEY
 MIN_KEY_CHARS = 32  # a shorter key could be guessed
 AUTH_SCHEME = ask.BEARER.strip().lower()  # the scheme of the Authorization header, which may be written in any case
 UNAUTHORIZED = 401
@@ -178,14 +178,14 @@ def http_app(state: SearchState, key: str) -> ASGIApp:
     return KeyGate(app, key)
 
 
-def read_key(environment: dict[str, str]) -> str:
-    """The key from the environment. Raises ConversionError when there is none, one short enough to be guessed, or one
-    with characters a header cannot carry as they are (it could never match)."""
-    key = environment.get(KEY_VARIABLE, "").strip()
+def read_key(values: Mapping[str, str]) -> str:
+    """The key among the settings `values` (settings.everything gives them). Raises ConversionError when there is none,
+    one short enough to be guessed, or one with characters a header cannot carry as they are (it could never match)."""
+    key = values.get(KEY_VARIABLE, "").strip()
     if len(key) < MIN_KEY_CHARS or not key.isascii():
         raise ConversionError(
-            f"set {KEY_VARIABLE} to a key of at least {MIN_KEY_CHARS} plain (ASCII) characters before starting; make one with: "
-            f"openssl rand -hex {MIN_KEY_CHARS // 2}"
+            f"set {KEY_VARIABLE} in {settings.SETTINGS_FILE.name} (or the environment) to a key of at least {MIN_KEY_CHARS} plain (ASCII) characters "
+            f"before starting; make one with: openssl rand -hex {MIN_KEY_CHARS // 2}"
         )
     return key
 
@@ -212,7 +212,7 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=DEFAULT_PORT, help="default: %(default)s")
     args = parser.parse_args()
     try:
-        key = read_key(os.environ)
+        key = read_key(settings.everything())
         state = load_state(args)
     except ConversionError as error:
         sys.exit(str(error))

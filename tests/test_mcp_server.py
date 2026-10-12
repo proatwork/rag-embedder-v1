@@ -9,6 +9,7 @@ Run from the project folder: venvs/bin/python -m unittest discover -s tests -v
 import asyncio
 import contextlib
 import io
+import os
 import threading
 import unittest
 from pathlib import Path
@@ -24,6 +25,7 @@ import ask
 import mcp_server
 import search
 import search_tool
+import settings
 from pipeline_common import ConversionError
 from search_tool import ARG_ARTICLE, ARG_COUNT, ARG_NORM, ARG_QUERY, EXCERPT_SEPARATOR, MAX_SEARCHES, TOOL_NAME
 from test_search_tool import (
@@ -159,8 +161,9 @@ class MainTest(unittest.TestCase):
     """The command line, up to where the server would start."""
 
     def run_main(self, environment: dict[str, str], *options: str) -> mock.Mock:
-        """Runs main with `options`; the state is not loaded and nothing is served. Returns the mock that stands for uvicorn.run."""
-        with mock.patch.object(mcp_server.sys, "argv", ["mcp_server.py", *options]), mock.patch.dict(mcp_server.os.environ, environment, clear=True), \
+        """Runs main with `options` in `environment`, without a settings file; the state is not loaded and nothing is
+        served. Returns the mock that stands for uvicorn.run."""
+        with mock.patch.object(mcp_server.sys, "argv", ["mcp_server.py", *options]), mock.patch.dict(os.environ, {settings.FILE_VARIABLE: "", **environment}, clear=True), \
                 mock.patch.object(mcp_server, "load_state", return_value=state()) as self.load_state, \
                 mock.patch.object(mcp_server.uvicorn, "run") as served, contextlib.redirect_stdout(io.StringIO()) as self.output:
             mcp_server.main()
@@ -170,6 +173,20 @@ class MainTest(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, mcp_server.KEY_VARIABLE):
             self.run_main({})
         self.load_state.assert_not_called()
+
+    def test_the_key_of_the_settings_file_is_enough(self):
+        with TemporaryDirectory() as folder:
+            file = Path(folder) / "settings.env"
+            file.write_text(f"{mcp_server.KEY_VARIABLE}={KEY}\n", encoding=settings.TEXT_ENCODING)
+            served = self.run_main({settings.FILE_VARIABLE: str(file)})
+        self.assertEqual(served.call_args.args[0].key, KEY.encode())
+
+    def test_the_environment_wins_over_the_settings_file(self):
+        with TemporaryDirectory() as folder:
+            file = Path(folder) / "settings.env"
+            file.write_text(f"{mcp_server.KEY_VARIABLE}={OTHER_KEY}\n", encoding=settings.TEXT_ENCODING)
+            served = self.run_main({settings.FILE_VARIABLE: str(file), mcp_server.KEY_VARIABLE: KEY})
+        self.assertEqual(served.call_args.args[0].key, KEY.encode())
 
     def test_with_a_key_the_server_listens_on_this_machine_only_behind_the_key(self):
         served = self.run_main({mcp_server.KEY_VARIABLE: KEY}, "--port", "9000")

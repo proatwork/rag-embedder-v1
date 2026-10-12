@@ -30,12 +30,13 @@ from pathlib import Path
 import numpy as np
 
 import pipeline_common
+import settings
 from json_to_chunks import (
     CONFIG_FILE, DEFAULT_MAX_TOKENS, DEFAULT_MIN_TOKENS, DEFAULT_TOKENIZER, EMBED_FIELD_KEY, KIND_FRAGMENTED, Sizer, TEXT_ENCODING, load_config,
 )
 from pipeline_common import JSONL_SUFFIX, NPZ_SUFFIX, ConversionError
 
-DEFAULT_SERVER = "http://192.168.0.157:1234"  # LM Studio, with the model loaded
+DEFAULT_SERVER = settings.embedding_server()  # this machine's own, from settings.env: LM Studio, with the model loaded
 DEFAULT_MODEL = "text-embedding-bge-m3"  # the model's id on the server; the chunks were sized with its tokenizer
 EMBEDDINGS_PATH = "/v1/embeddings"  # of the OpenAI API
 JSON_HEADERS = {"Content-Type": "application/json"}
@@ -127,7 +128,7 @@ def post_json(url: str, body: dict, timeout: float, headers: dict[str, str] | No
     try:
         call = urllib.request.Request(url, data=json.dumps(body).encode(TEXT_ENCODING), headers={**JSON_HEADERS, **(headers or {})})
     except ValueError as error:
-        raise ConversionError(f"{url} is not an address: --server must look like {DEFAULT_SERVER}") from error
+        raise ConversionError(f"{url} is not an address: the server's must look like {settings.LOCAL_SERVER}") from error
     try:
         with OPENER.open(call, timeout=timeout) as reply:
             answer = json.load(reply)

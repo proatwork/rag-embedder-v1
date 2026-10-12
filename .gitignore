@@ -16,3 +16,5 @@ OLD/
 NormativeIncendiu
 docs_processed/
 venvs
+# This machine's own addresses, ports and keys (see settings.py); settings.example.env is the committed pattern
+settings.env

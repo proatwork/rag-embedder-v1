@@ -52,6 +52,7 @@ PROJECT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_DIR))  # ask.py and the modules it uses live in the project folder
 
 import ask  # noqa: E402
+import settings  # noqa: E402
 import search_tool  # noqa: E402
 from embed_chunks import DEFAULT_SERVER as DEFAULT_EMBEDDING_SERVER  # noqa: E402
 from embed_chunks import OPENER, REDIRECT_CODES  # noqa: E402
@@ -63,8 +64,8 @@ from search import (  # noqa: E402
 )
 
 HOST = "127.0.0.1"
-DEFAULT_PORT = 8765
-DEFAULT_CHAT_SERVER = "http://192.168.0.157:1234"
+DEFAULT_PORT = settings.chatbot_port()  # this machine's own, from settings.env, as is the next
+DEFAULT_CHAT_SERVER = settings.chat_server()
 PAGE_FILE = Path(__file__).with_name("index.html")
 TEXT_ENCODING = ask.TEXT_ENCODING
 MAX_TOP = 50
@@ -176,7 +177,7 @@ EVENT_ERROR = "error"
 STATUS_SEARCHING = "searching"
 STATUS_WAITING = "waiting"
 
-BAD_ADDRESS = "{address!r} is not a server address like " + DEFAULT_CHAT_SERVER
+BAD_ADDRESS = "{address!r} is not a server address like " + settings.LOCAL_SERVER
 API_STYLE_MESSAGE = f"the API style must be one of: {', '.join(APIS)}"
 SEARCH_MODE_MESSAGE = f"search must be one of: {', '.join(SEARCH_MODES)}"
 NO_TOOLS_HINT = " (if this model or server takes no tools, set Search to once)"  # after a chat server's refusal of a request because of its tools

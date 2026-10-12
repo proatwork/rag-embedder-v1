@@ -9,9 +9,12 @@ import os
 import threading
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import mock
 
 import ask
+import settings
 from pipeline_common import ConversionError
 
 KEY = "secret-key-123"
@@ -110,12 +113,27 @@ class ChatOptionsTest(unittest.TestCase):
 
 
 class ApiKeyTest(unittest.TestCase):
+    def setUp(self):  # no settings file, unless a test names one: this machine's own may hold a key under any name
+        patcher = mock.patch.dict(os.environ, {settings.FILE_VARIABLE: ""})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_no_variable_means_no_key(self):
         self.assertIsNone(ask.api_key_from(None))
 
     def test_the_key_is_read_from_the_environment_and_trimmed(self):
         with mock.patch.dict(os.environ, {VARIABLE: f"  {KEY}\n"}):
             self.assertEqual(ask.api_key_from(VARIABLE), KEY)
+
+    def test_the_key_is_read_from_the_settings_file_when_the_environment_has_none(self):
+        with TemporaryDirectory() as folder:
+            file = Path(folder) / "settings.env"
+            file.write_text(f"{VARIABLE}={KEY}\n", encoding=settings.TEXT_ENCODING)
+            with mock.patch.dict(os.environ, {settings.FILE_VARIABLE: str(file)}):
+                os.environ.pop(VARIABLE, None)
+                self.assertEqual(ask.api_key_from(VARIABLE), KEY)
+                with mock.patch.dict(os.environ, {VARIABLE: KEY + "-of-the-environment"}):
+                    self.assertEqual(ask.api_key_from(VARIABLE), KEY + "-of-the-environment")
 
     def test_a_key_with_spaces_or_line_breaks_is_refused(self):
         for bad in ("two words", "line\nbreak", "tab\tinside", "clé"):

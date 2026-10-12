@@ -31,7 +31,8 @@ to this folder to use them: they import `pipeline_common.py` and `pdf_to_md.py`)
 - `json_to_chunks.py` needs `transformers` and `semchunk`, both in the virtual environment, and downloads a
   tokenizer from Hugging Face the first time it runs (see its section).
 - `embed_chunks.py`, `search.py` and `eval_retrieval.py` do not run the embedding model themselves. They ask a
-  server for the vectors: LM Studio at `http://192.168.0.157:1234`, with the model `text-embedding-bge-m3` loaded.
+  server for the vectors: LM Studio at the address `settings.env` gives (`NORMS_EMBEDDING_SERVER`; see *Settings* in
+  `COMMANDS.md`), with the model `text-embedding-bge-m3` loaded.
   When that server is off, or the model is not loaded, none of the three can embed anything. No model weights are
   downloaded to this machine. `embed_chunks.py` still needs `transformers` and the tokenizer `json_to_chunks.py`
   downloaded, to count texts that are too long.
@@ -336,11 +337,11 @@ venvs/bin/python embed_chunks.py --input-dir docs_processed/chunks --output-dir 
 | Option | Default | Meaning |
 |---|---|---|
 | `--config` | `chunk-config.json` beside the script | Read for `embed_field` (below). |
-| `--server` | `http://192.168.0.157:1234` | Address of the server that runs the model. It must speak the OpenAI embeddings API, as LM Studio does. |
+| `--server` | `settings.env`, else `http://127.0.0.1:1234` | Address of the server that runs the model. It must speak the OpenAI embeddings API, as LM Studio does. |
 | `--model` | `text-embedding-bge-m3` | The model's id on the server, as LM Studio lists it. |
 
 - The first line of a run says whether the model reproduces the example on its model card
-  (`text-embedding-bge-m3 reproduces its model card: [[0.6254, 0.3475], [0.3487, 0.6786]] (on http://192.168.0.157:1234)`;
+  (`text-embedding-bge-m3 reproduces its model card: [[0.6254, 0.3475], [0.3487, 0.6786]] (on http://127.0.0.1:1234)`;
   the card says `[[0.6265, 0.3477], [0.3499, 0.678]]` and 0.01 either way is accepted). If it does not, the run stops before
   anything is written: the vectors would be wrong in a way no later step shows. The small gap is there because the
   server runs a compressed copy of the model (`Q8_0`).
