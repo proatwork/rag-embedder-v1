@@ -59,6 +59,13 @@ Done from the Mac over SSH, after the rest of this file was written. Where the t
   servers send an `Origin` header, which could not be found out from here.
 - **A fresh review subagent went over it**; its one must-fix (a failure inside a search other than the embedding
   server's reached the client with its own text) and the smaller points are fixed, each with a test.
+- **It is live and connected to claude.ai (2026-10-12).** The user put a Cloudflare tunnel in front (`cloudflared` on
+  the box, a token-based tunnel set up in the dashboard): `https://ailinca.proatwork.ro/mcp` goes to
+  `http://127.0.0.1:8766`. The connector was added in Claude with "No sign-in" and the request header
+  `Authorization: Bearer <key>`, and it connected. The first try failed ("Couldn't connect to the server") because
+  the header was not there yet: the server's output then shows Claude's OAuth lookups and `POST /mcp`, all `401`.
+  Request headers are a beta of Claude's that not every account has; without them the fallback would be the key in
+  the address (`/mcp/<key>`), which was designed but **not built**, as it was not needed.
 - **Not done, and whose it is:**
   - The domain, the certificate and the reverse proxy: **the user's**. Until then nothing can be tried from claude.ai.
   - Starting the server for real on the box, with the user's own key (kept in `~/.config/norms-mcp.key`): after the proxy.
