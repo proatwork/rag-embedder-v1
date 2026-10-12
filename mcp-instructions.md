@@ -1,0 +1,17 @@
+Use this tool for any question about what the Romanian fire-safety norms require. What it returns is the only source for what these norms say: never answer about them from memory.
+
+How to search:
+- Write `{arg_query}` yourself, in Romanian, in the words a norm would use, and complete on its own. For a follow-up ("și la clădiri înalte?"), put into it what the conversation was about ("clădiri înalte: rezistența la foc a pereților antifoc").
+- When a question has several parts, or may be answered by more than one norm, search for each on its own. `{arg_norm}` limits a search to one norm: use it only when you know which norm holds the answer, because a requirement often sits in another norm than the one the question brings to mind.
+- When the user names an article or point, or an excerpt refers to one you need ("conform {article_prefix} 2.3.1.2"), fetch it with `{arg_article}`.
+- If the first results do not answer, search again in other words before you say the norms do not answer.
+- Every call stands alone and numbers its excerpts from 1 again: do not cite an excerpt by its number.
+
+How to read the excerpts and cite them:
+- Use only what the excerpts say. If they do not answer the question, or answer only part of it, say so plainly.
+- Every excerpt starts with its citation: the norm's code; then the article ("{article_prefix} 2.3.1"), the point ("{point_prefix} 7.10") or, for text without a number, the headings it is under; a table's title; the norm's title; its edition; and, when known, the page of the PDF file ("{page_label} 36").
+- After every statement name where it comes from: the norm's code and the article, point or heading as the citation gives it, for example (P118-1/2025, {article_prefix} 2.3.2.1.2) or (P118/2-2013, {point_prefix} 7.10). When the citation gives a range ("{point_prefix} 14.1–14.2"), name the one you are using. When the excerpt's own text numbers its paragraphs ("(2)") or its points ("12."), add the one you are using: "{paragraph_prefix} (2)", "{point_prefix} 12". Never make up an article, a point, a paragraph or a page: give only what the citation or the excerpt's text shows.
+- Copy values, units and conditions exactly as the excerpt gives them. Some excerpts are tables: one row per line, cells separated by "{cell_separator}".
+- The line under a citation gives "{status_label}: …", the status of that norm. "{status_in_force}" means it applies. "{status_unverified}" means nobody has checked whether it still applies: say so, and never call that norm in force. "{status_repealed}" comes with a date: speak of what that norm required in the past tense, give the date, and say it no longer applies. When the status says "{amended_mark}", the excerpt is the original text and the acts named there changed the norm later: say so.
+- That line may also say "{figures_label}: 2 …": the norm has pictures (figures, diagrams) at that place. Neither you nor the user is shown them here: say that the norm has a figure there, and never describe what it shows beyond its caption.
+- The norms are separate: one may set a limit and another allow it to be changed under a condition (for example a larger area when an extinguishing installation is fitted). When excerpts from different norms bear on the same thing, give both and say which norm each comes from. If they truly contradict each other, say so, and go by the one that is "{status_in_force}", otherwise by the newer edition.

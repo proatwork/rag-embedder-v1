@@ -583,6 +583,56 @@ class LimitTest(EmbeddingReplaced):
         self.assertIn("the limit of 1 searches", searching.reply({ARG_QUERY: ABOUT_WALLS}))
 
 
+class NoLimitTest(EmbeddingReplaced):
+    """A session without a limit (max_searches=None), as mcp_server.py makes one for every call: nothing counts the
+    calls, and nothing says a search is the last."""
+
+    def test_the_line_above_the_excerpts_does_not_count_the_calls(self):
+        searching = session(max_searches=None)
+        reply = searching.reply({ARG_QUERY: ABOUT_WALLS, ARG_COUNT: 1})
+        self.assertEqual(reply, answered(search_tool.RESULT_HEADER_UNLIMITED.format(what=for_query(ABOUT_WALLS), found="1 excerpt"), *given((1, WALL))))
+
+    def test_calls_beyond_the_usual_limit_are_run_and_none_is_called_the_last(self):
+        searching = session(max_searches=None)
+        replies = [searching.reply({ARG_ARTICLE: POINT_NUMBER}) for _ in range(MAX_SEARCHES + 2)]
+        self.assertFalse(searching.refused)
+        self.assertTrue(all(not search.problem for search in searching.searches))
+        header = search_tool.RESULT_HEADER_UNLIMITED.format(what=for_article(POINT_NUMBER), found="1 excerpt")
+        for reply in replies:
+            self.assertTrue(reply.startswith(header), reply)
+            self.assertNotIn(LAST_SEARCH, reply)
+            self.assertNotIn(str(MAX_SEARCHES), reply.splitlines()[0])  # the line above the excerpts names no limit
+
+    def test_a_call_that_cannot_be_run_is_told_so_without_a_number(self):
+        searching = session(max_searches=None)
+        problem = search_tool.NO_SUCH_NUMBER.format(article=UNKNOWN_NUMBER, where="")
+        self.assertEqual(searching.reply({ARG_ARTICLE: UNKNOWN_NUMBER}), search_tool.NOT_RUN_UNLIMITED.format(problem=problem))
+        self.assertEqual(searching.searches[0].problem, problem)
+
+
+class FiguresShownTest(unittest.TestCase):
+    """Whether the reader is shown the pictures of an excerpt is said on its line; a session says which."""
+
+    PICTURED = chunk(WALL_NUMBER, images=[{"caption": "Figura 1", "page": 4}])
+
+    def test_the_figures_are_shown_unless_said_otherwise(self):
+        self.assertIn(search.FIGURES_SHOWN, search.figures_note(self.PICTURED))
+        self.assertIn(search.FIGURES_SHOWN, search_tool.excerpt(1, self.PICTURED, "The text."))
+
+    def test_figures_that_are_not_shown_are_said_not_to_be(self):
+        note = search.figures_note(self.PICTURED, shown=False)
+        self.assertIn(search.FIGURES_NOT_SHOWN, note)
+        self.assertNotIn(search.FIGURES_SHOWN, note)
+        self.assertEqual(note.replace(search.FIGURES_NOT_SHOWN, search.FIGURES_SHOWN), search.figures_note(self.PICTURED))  # nothing else differs
+
+    def test_a_session_gives_its_excerpts_as_it_was_told(self):
+        index = search.Index([self.PICTURED], np.eye(1, dtype=np.float32), MODEL)
+        for shown, words in ((True, search.FIGURES_SHOWN), (False, search.FIGURES_NOT_SHOWN)):
+            reply = SearchSession(index, CONFIG, SERVER, figures_shown=shown).reply({ARG_ARTICLE: WALL_NUMBER})
+            self.assertIn(f"{search.FIGURES_LABEL}: 1 (", reply)
+            self.assertIn(words, reply)
+
+
 class EmbeddingServerTest(unittest.TestCase):
     """The embedding server cannot be used: whatever asks it is told so by an error, and the program is not stopped."""
 

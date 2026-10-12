@@ -116,6 +116,7 @@ TOOL_TOKENS = {
     "{tool_name}": TOOL_NAME, "{max_searches}": str(MAX_SEARCHES), "{arg_query}": ARG_QUERY, "{arg_norm}": ARG_NORM,
     "{arg_article}": ARG_ARTICLE,
 }
+SEARCH_TOKENS = {**INSTRUCTION_TOKENS, **TOOL_TOKENS}  # all a file may use that tells a model how to search
 REQUEST_TEMPLATE = "Excerpts from the norms:{separator}{excerpts}{separator}Question: {question}"
 CUT_NOTE = "The answer above is cut short: the model ran out of room. Load it on the server with a larger context length."
 NO_ROOM = ": it ran out of room before it got to the answer; load it on the server with a larger context length"
@@ -179,7 +180,7 @@ def tool_instructions(rules: str, path: Path = TOOL_INSTRUCTIONS_FILE) -> str:
     """What a model that searches for itself is told: how to search (the file at `path`, which may use TOOL_TOKENS as
     well as INSTRUCTION_TOKENS), then the `rules` for reading the excerpts and writing the answer. Raises as
     load_instructions does."""
-    return load_instructions(path, {**INSTRUCTION_TOKENS, **TOOL_TOKENS}) + EXCERPT_SEPARATOR + rules
+    return load_instructions(path, SEARCH_TOKENS) + EXCERPT_SEPARATOR + rules
 
 
 def framed(instructions: str, history: list[dict] | None, request: str) -> list[dict]:

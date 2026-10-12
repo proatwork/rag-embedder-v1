@@ -7,6 +7,8 @@ search to the next and a chunk found again keeps its number, so that [n] in an a
 
 This module knows nothing of chat servers: ask.py and the chatbot hand the tool to a model (tool_schema, and
 SearchSession.reply for every call it makes), and anything else that can call a function could do the same.
+mcp_server.py does, for clients that know nothing of "one question": it makes a session for every call, without a
+limit (max_searches=None).
 
 From Python:
     session = SearchSession(index, config, server)       # index and config as search.load_index and load_config give them
@@ -35,6 +37,11 @@ ARG_ARTICLE = "article"
 ARG_COUNT = "count"
 MAX_COUNT = 20  # the most excerpts one call may ask for
 MAX_SEARCHES = 5  # calls for one question; each is another round with the model, and adds its excerpts to the prompt
+# The parts of the tool as an OpenAI-style chat request describes it (see tool_schema).
+SCHEMA_FUNCTION = "function"
+SCHEMA_NAME = "name"
+SCHEMA_DESCRIPTION = "description"
+SCHEMA_PARAMETERS = "parameters"
 TOOL_DESCRIPTION = (
     "Search the Romanian fire-safety norms. Returns numbered excerpts, each under its citation and the status of its norm. "
     f"Give `{ARG_QUERY}` to search by meaning, or `{ARG_ARTICLE}` to fetch an article or point by its number."
@@ -52,6 +59,7 @@ NOTE_SEPARATOR = " · "  # between the status and the figures, on the line under
 EXCERPT_SEPARATOR = LINE_SEPARATOR * 2
 # What a call is answered with, around the excerpts. English, like the rest of what frames the excerpts for the model.
 RESULT_HEADER = "Search {number} of at most {limit}, {what}: {found}"
+RESULT_HEADER_UNLIMITED = "Searched {what}: {found}"  # of a session without a limit, which does not count its calls
 FOR_QUERY = 'for "{query}"'
 FOR_ARTICLE = "the article or point {article}"
 IN_NORM = " in {norm}"
@@ -62,6 +70,7 @@ NOT_SHOWN = "; {count} more with that number are not shown: ask with a larger `"
 GIVEN_ABOVE = "[{number}] {reference}: given above, under this number."
 LAST_SEARCH = "This was the last search for this question: answer now from the excerpts you have, and say what they leave unanswered."
 NOT_RUN = "Search {number} was not run: {problem}"
+NOT_RUN_UNLIMITED = "The search was not run: {problem}"
 LIMIT_REACHED = "the limit of {limit} searches for one question is reached. Answer now from the excerpts you have, and say what they leave unanswered."
 BAD_ARGUMENTS = f"the arguments must be a JSON object with `{ARG_QUERY}` or `{ARG_ARTICLE}`."
 NOTHING_ASKED = f"give `{ARG_QUERY}` (what to look for) or `{ARG_ARTICLE}` (a number to fetch)."
@@ -88,18 +97,18 @@ class Search:
     problem: str = ""  # why nothing was searched: the call was wrong, or over the limit
 
 
-def excerpt(number: int, record: dict, text: str) -> str:
+def excerpt(number: int, record: dict, text: str, figures_shown: bool = True) -> str:
     """One chunk as the language model is given it: its number and citation, then a line with the status of its norm
-    and with its figures when it has any, then `text`."""
-    notes = NOTE_SEPARATOR.join(note for note in (f"{STATUS_LABEL}: {status_words(record)}", figures_note(record)) if note)
+    and with its figures when it has any (`figures_shown`: whether the reader is shown them), then `text`."""
+    notes = NOTE_SEPARATOR.join(note for note in (f"{STATUS_LABEL}: {status_words(record)}", figures_note(record, figures_shown)) if note)
     return LINE_SEPARATOR.join((EXCERPT_HEADER.format(number=number, citation=citation(record)), notes, text))
 
 
-def excerpts(numbered: list[tuple[int, dict]], config: dict) -> list[str]:
+def excerpts(numbered: list[tuple[int, dict]], config: dict, figures_shown: bool = True) -> list[str]:
     """Chunks with their numbers as the language model is given them (see excerpt). A chunk is given as it was embedded;
     the embedded text itself does not change."""
     _, texts = texts_to_embed([record for _, record in numbered], config)
-    return [excerpt(number, record, text) for (number, record), text in zip(numbered, texts)]
+    return [excerpt(number, record, text, figures_shown) for (number, record), text in zip(numbered, texts)]
 
 
 def tool_schema(codes: list[str], count: int = DEFAULT_TOP, titles: dict[str, str] | None = None) -> dict:
@@ -108,7 +117,7 @@ def tool_schema(codes: list[str], count: int = DEFAULT_TOP, titles: dict[str, st
     what each norm is about, so that it can tell which one to search."""
     named = [NORM_WITH_TITLE.format(code=code, title=titles[code]) for code in codes if titles and titles.get(code)]
     norm_help = NORM_HELP + (NORMS_ARE.format(norms=NORM_SEPARATOR.join(named)) if named else "")
-    return {"type": "function", "function": {"name": TOOL_NAME, "description": TOOL_DESCRIPTION, "parameters": {
+    return {"type": SCHEMA_FUNCTION, SCHEMA_FUNCTION: {SCHEMA_NAME: TOOL_NAME, SCHEMA_DESCRIPTION: TOOL_DESCRIPTION, SCHEMA_PARAMETERS: {
         "type": "object",
         "properties": {
             ARG_QUERY: {"type": "string", "description": QUERY_HELP},
@@ -128,14 +137,18 @@ def text_argument(arguments: dict, name: str) -> str:
 class SearchSession:
     """The searches of one question and the chunks they gave. `server` runs the embedding model; `count` is how many
     excerpts a call gets when it does not say (at most MAX_COUNT); with `doc`, only that norm can be searched, and a
-    call that names another is refused. Raises ConversionError for a `doc` no chunk has."""
+    call that names another is refused. `max_searches` is the limit of calls; None is no limit, and then the line
+    above the excerpts does not count the calls (for mcp_server.py: the rounds of ask.py and the chatbot need a limit).
+    `figures_shown` says whether the reader is shown the pictures of the excerpts, which every excerpt with pictures
+    states. Raises ConversionError for a `doc` no chunk has."""
 
-    def __init__(self, index: Index, config: dict, server: str, count: int = DEFAULT_TOP, doc: str | None = None, max_searches: int = MAX_SEARCHES):
+    def __init__(self, index: Index, config: dict, server: str, count: int = DEFAULT_TOP, doc: str | None = None, max_searches: int | None = MAX_SEARCHES, figures_shown: bool = True):
         self.index = index
         self.config = config
         self.embedder = Embedder(index.model, server)
         self.count = min(count, MAX_COUNT)
         self.max_searches = max_searches
+        self.figures_shown = figures_shown
         self.titles = {record["doc_code"]: record.get("doc_title") or "" for record in index.records}  # of the norms, by code
         self.codes = sorted(self.titles)
         self.doc = self.known_code(doc) if doc else None
@@ -156,7 +169,7 @@ class SearchSession:
     @property
     def refused(self) -> bool:
         """Whether a call came after the limit and was told so: a model that calls again is not going to stop."""
-        return len(self.searches) > self.max_searches
+        return self.max_searches is not None and len(self.searches) > self.max_searches
 
     def reply(self, arguments: str | dict, name: str = TOOL_NAME) -> str:
         """What the model is given back for one call: the excerpts found, numbered, under a line that says what was
@@ -167,21 +180,21 @@ class SearchSession:
         search = Search(len(self.searches) + 1)
         self.searches.append(search)
         try:
-            if search.number > self.max_searches:  # before anything else: `refused` says the model was told the limit
+            if self.max_searches is not None and search.number > self.max_searches:  # before anything else: `refused` says the model was told the limit
                 raise BadCall(LIMIT_REACHED.format(limit=self.max_searches))
             if name != TOOL_NAME:
                 raise BadCall(NO_SUCH_TOOL.format(name=name))
             found, more = self.find(search, arguments)
         except BadCall as problem:
             search.problem = str(problem)
-            not_run = NOT_RUN.format(number=search.number, problem=search.problem)
+            not_run = (NOT_RUN_UNLIMITED if self.max_searches is None else NOT_RUN).format(number=search.number, problem=search.problem)
             return EXCERPT_SEPARATOR.join((not_run, LAST_SEARCH)) if search.number == self.max_searches else not_run
         except ConversionError as problem:  # the embedding server: the call is kept as one that was not run, and the question ends here
             search.problem = str(problem)
             raise
         fresh = [(score, record) for score, record in found if record["id"] not in self.numbers]
         numbered = [(len(self.sources) + place, record) for place, (_, record) in enumerate(fresh, start=1)]
-        texts = dict(zip((number for number, _ in numbered), excerpts(numbered, self.config)))
+        texts = dict(zip((number for number, _ in numbered), excerpts(numbered, self.config, self.figures_shown)))
         self.numbers.update((record["id"], number) for number, record in numbered)
         self.sources += fresh
         search.numbers = [self.numbers[record["id"]] for _, record in found]
@@ -248,7 +261,8 @@ class SearchSession:
         what = FOR_ARTICLE.format(article=search.article) if search.article else FOR_QUERY.format(query=search.query)
         found = FOUND_ONE if len(search.numbers) == 1 else FOUND_MANY.format(count=len(search.numbers))
         repeats = len(search.numbers) - search.new
+        result_header = RESULT_HEADER_UNLIMITED if self.max_searches is None else RESULT_HEADER
         return (
-            RESULT_HEADER.format(number=search.number, limit=self.max_searches, what=what + (IN_NORM.format(norm=search.norm) if search.norm else ""), found=found)
+            result_header.format(number=search.number, limit=self.max_searches, what=what + (IN_NORM.format(norm=search.norm) if search.norm else ""), found=found)
             + (REPEATS.format(count=repeats) if repeats else "") + (NOT_SHOWN.format(count=more) if more else "")
         )

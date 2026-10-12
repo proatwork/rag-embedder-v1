@@ -69,6 +69,7 @@ AMENDED = "text original, " + AMENDED_MARK + " prin: {acts}"
 ACT_SEPARATOR = "; "
 FIGURES_LABEL = "Figuri"  # the instructions name it
 FIGURES_SHOWN = "afișate utilizatorului în sursele de sub răspuns"
+FIGURES_NOT_SHOWN = "neafișate utilizatorului"  # where nothing shows the reader the pictures (the MCP server)
 CAPTIONS_LABEL = "legende"
 MORE_CAPTIONS = "și alte {count}"
 IMAGE_FILE_KEY = "file"  # added to each image of a chunk on loading: its path from where the script runs
@@ -290,14 +291,14 @@ def applies_as_written(record: dict) -> bool:
     return record["status"] == STATUS_IN_FORCE and not record.get(AMENDED_BY_KEY)
 
 
-def figures_note(record: dict) -> str:
-    """What is said of a chunk's pictures: how many, on which PDF pages, that the reader is shown them, and the start
-    of the captions they have; empty when it has none. Nobody is given the pictures themselves by this."""
+def figures_note(record: dict, shown: bool = True) -> str:
+    """What is said of a chunk's pictures: how many, on which PDF pages, whether the reader is shown them (`shown`),
+    and the start of the captions they have; empty when it has none. Nobody is given the pictures themselves by this."""
     images = record.get("images", [])
     if not images:
         return ""
     pages = pages_note([image.get("page") for image in images])
-    note = f"{FIGURES_LABEL}: {len(images)}{' (' + pages + ')' if pages else ''}{LIST_SEPARATOR}{FIGURES_SHOWN}"
+    note = f"{FIGURES_LABEL}: {len(images)}{' (' + pages + ')' if pages else ''}{LIST_SEPARATOR}{FIGURES_SHOWN if shown else FIGURES_NOT_SHOWN}"
     captions = [f'"{caption}"' for image in images if (caption := short_caption(image))]
     if len(captions) > CAPTIONS_CITED:
         captions = captions[:CAPTIONS_CITED] + [MORE_CAPTIONS.format(count=len(captions) - CAPTIONS_CITED)]

@@ -329,13 +329,79 @@ after re-chunking, re-embedding or editing the rules. If an answer is empty, the
 To try the page without any model, run `venvs/bin/python chatbot/tests/fake_lmstudio.py` (a fake chat server on `http://127.0.0.1:1235` that plays a scripted
 answer; its OpenAI-style API is at `http://127.0.0.1:1235/api/coding/v3`, where it plays one search and then an answer when the model is to search) and put that address in the *Chat server* field.
 
+## 9. MCP server (the search as a tool for Claude)
+
+`mcp_server.py` gives Claude one tool, `search_norms`: the search of step 5 and the lookup by number, with the arguments
+the chatbot's model has (`query`, `norm`, `article`, `count`). Claude writes the searches and the answer; this server
+only returns excerpts. It works in every Claude: claude.ai, Claude Desktop, the phone app and Claude Code.
+
+Make the key **once** and keep it, in a file only you can read, outside this folder:
+
+```sh
+(umask 077; mkdir -p ~/.config && openssl rand -hex 16 > ~/.config/norms-mcp.key)
+```
+
+Then, every time the server is started:
+
+```sh
+export NORMS_MCP_KEY="$(cat ~/.config/norms-mcp.key)"
+venvs/bin/python mcp_server.py --server http://127.0.0.1:1234
+```
+
+It answers at `http://127.0.0.1:8766/mcp`, on this machine only. Two things must be in place around it:
+
+- **The key.** Every HTTP request must carry `Authorization: Bearer <key>`; anything else is answered `401`. The key is
+  read from the environment variable `NORMS_MCP_KEY` (at least 32 plain characters), never from the command line, and
+  the server does not start without it. Whoever has the key can search. A new key means restarting the server and
+  adding the connector again in Claude, which is why it is made once and kept. The key is the only gate: the server
+  does not check under which name (`Host`) or from which page (`Origin`) a request comes, so it needs no option for
+  the proxy's name.
+- **A reverse proxy with the certificate.** Claude connects from Anthropic's servers, so the server needs a public
+  `https://` address. The proxy forwards `https://norms.example.com/mcp` (no slash at the end) to
+  `http://127.0.0.1:8766/mcp`, passes the `Authorization` header on unchanged, and does not buffer the replies. For
+  nginx: `proxy_buffering off;` and `proxy_set_header X-Forwarded-Proto $scheme;` (without the second, a request to
+  `/mcp/` is redirected to an `http://` address).
+
+| Option | Default | Meaning |
+|---|---|---|
+| `--server URL` | `http://192.168.0.157:1234` | The embedding server, as in step 5. On the Ubuntu box: `http://127.0.0.1:1234`. |
+| `--port N` | `8766` | The server listens on this machine only (`127.0.0.1`). |
+| `--top N` | `5` | Excerpts a call gets when it does not say (1–20). |
+| `--chunks-dir DIR` | `docs_processed/chunks` | The chunk files of step 3. |
+| `--vectors-dir DIR` | `docs_processed/vectors` | The vector files of step 4. |
+| `--config FILE` | `chunk-config.json` | As in step 4. |
+| `--rules FILE` | `mcp-instructions.md` | How to search and cite; put into the tool's description, which Claude reads. |
+
+**Add it to Claude** (claude.ai; Claude Desktop and the phone app take it from the same account): *Customize → Connectors
+→ + Add → Add custom connector*. Name it, give `https://norms.example.com/mcp`, choose **No sign in** under
+*Authentication*, and under *Request headers* add `Authorization` with the value `Bearer <key>`. A connector cannot be
+edited: to change the address or the key, remove it and add it again.
+
+**Add it to Claude Code:**
+
+```sh
+claude mcp add --transport http norms https://norms.example.com/mcp --header "Authorization: Bearer $(cat ~/.config/norms-mcp.key)"
+```
+
+How it differs from the chatbot:
+
+- **Every call stands alone.** Its excerpts are numbered from 1 and there is no limit of 5 searches, because Claude does
+  not say where one question ends. Claude cites by norm and article (`P118/2-2013, pct. 7.10`), not by `[n]`.
+- **No pictures.** An excerpt with figures says so and says they are not shown (`Figuri: 2, neafișate utilizatorului`).
+- **A search by meaning needs the embedding server.** When it does not answer, the call is answered with an error that
+  says so, and the reason (with that server's address) is printed by `mcp_server.py` itself. A lookup by `article`
+  works without it. Whatever else fails inside a search is answered the same way: Claude is told only that it failed.
+
+The chunks, the vectors and `mcp-instructions.md` are read once when the script starts: restart it after re-chunking,
+re-embedding or editing the rules. The server keeps nothing between two requests.
+
 ## Tests
 
 ```sh
 venvs/bin/python -m unittest discover -s tests -v
 ```
 
-240 tests: the picture references (`tests/test_chunk_images.py`), the citation and the status of a norm (`tests/test_citation.py`), the instructions file (`tests/test_ask_instructions.py`), the conversation (`tests/test_ask_conversation.py`), the chat path and API key options (`tests/test_ask_chat_options.py`), the search tool (`tests/test_search_tool.py`: numbering across searches, wrong calls, the limit, the lookup by number) and the model searching through `ask.py` (`tests/test_ask_tools.py`: the rounds, the fallback to a single search, the search rules file, the command line). `discover -s tests` looks for tests in the `tests` folder and
+278 tests: the picture references (`tests/test_chunk_images.py`), the citation and the status of a norm (`tests/test_citation.py`), the instructions file (`tests/test_ask_instructions.py`), the conversation (`tests/test_ask_conversation.py`), the chat path and API key options (`tests/test_ask_chat_options.py`), the search tool (`tests/test_search_tool.py`: numbering across searches, wrong calls, the limit and a session without one, the lookup by number, pictures said to be shown or not), the model searching through `ask.py` (`tests/test_ask_tools.py`: the rounds, the fallback to a single search, the search rules file, the command line) and the MCP server (`tests/test_mcp_server.py`: the tool as an MCP client is told of it, calls in the same process and over HTTP on a free port of this machine in both protocol versions, the key, failures inside a search, the command line). `discover -s tests` looks for tests in the `tests` folder and
 `-v` lists each one. No server and no download needed.
 
 ```sh

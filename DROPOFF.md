@@ -3,8 +3,8 @@
 State as of **2026-10-12**, written on the Mac. Read this first, then `COMMANDS.md` (how every script is run) and
 `MANUAL.md`. This file is "where are we, what is decided, what is next"; it does not repeat the two manuals.
 
-**No code was changed in the session that wrote this.** Everything below is findings and a plan. Nothing for MCP exists
-yet, and the `mcp` package is not installed.
+**The two "Update" sections below are the current state**; the rest is the findings and the plan they grew from, kept
+for the reasons it gives.
 
 ## Update, later on 2026-10-12: the box is set up for search
 
@@ -36,7 +36,35 @@ Done from the Mac over SSH, after the rest of this file was written. Where the t
   `ssh -t proatwork@192.168.0.241 tmux attach -t claude`). The user wants commands on the box run inside it, so that
   they can see them. Its shell has a `PROMPT_COMMAND` that releases the tmux lock `claude-lock`. It is gone after a
   reboot.
-- **Not done on the box:** the two test suites, the full install, anything for MCP.
+- **Not done on the box:** the full install (`torch`, `docling`), so `pdf_to_md.py` does not run there.
+
+## Update: the MCP server is built (2026-10-12)
+
+- **`mcp_server.py` exists and works**, with `mcp-instructions.md` (its rules, in the tool's description) and
+  `tests/test_mcp_server.py`. How to run it, the proxy's part and the steps in Claude are in `COMMANDS.md`, section 9.
+- **What changed besides:** `search_tool.SearchSession` takes `max_searches=None` (no limit, a header that does not
+  count) and `figures_shown`; `search.figures_note` takes `shown`. The defaults keep `ask.py` and the chatbot as they
+  were. `requirements.txt` has the 14 new pins of `mcp` 2.3.0.
+- **Run and read, on the Mac and on the box:** 278 tests in `tests/`, 144 in `chatbot/tests/`, all passing. On the box
+  the server was started against the real chunks and the box's LM Studio and called by the `mcp` package's own
+  client over HTTP: 401 without the key; with it, the tool listed with its three norms, an article fetched by number,
+  a search by meaning answered. That test server was stopped; nothing listens on 8766 now.
+- **How it was written against `mcp` 2.3.0** (read in the installed source, not from memory of 1.x): the low-level
+  `mcp.server.lowlevel.Server` with `on_list_tools` / `on_call_tool`, its `streamable_http_app(json_response=True,
+  stateless_http=True)`, and a small ASGI class of our own (`KeyGate`) in front for the key. The package's own OAuth
+  machinery is not used.
+- **A decision to know about: the key is the only gate.** The package's check of the `Host` and `Origin` headers is
+  switched off, so there is no `--public-host` option (the plan below had one). Reason: nothing passes `KeyGate`
+  without the key, so the check kept nobody out; and it would have refused every request of Claude if Anthropic's
+  servers send an `Origin` header, which could not be found out from here.
+- **A fresh review subagent went over it**; its one must-fix (a failure inside a search other than the embedding
+  server's reached the client with its own text) and the smaller points are fixed, each with a test.
+- **Not done, and whose it is:**
+  - The domain, the certificate and the reverse proxy: **the user's**. Until then nothing can be tried from claude.ai.
+  - Starting the server for real on the box, with the user's own key (kept in `~/.config/norms-mcp.key`): after the proxy.
+  - Nothing starts by itself after a reboot: neither LM Studio's server nor `mcp_server.py` (no systemd unit).
+  - The changes are **not committed**: the repository (`origin` is `github.com:proatwork/rag-embedder-v1`, data
+    folders ignored) has one commit, from before this work. The box has no `git`; its copy was made with `rsync`.
 
 ## What the user wants
 
@@ -51,7 +79,7 @@ Done from the Mac over SSH, after the rest of this file was written. Where the t
 | Why `llmster` does not run on the Ubuntu box | **Found** (CPU has no AVX2, see below) |
 | What breaks when the folder moves to Ubuntu | **Found**, listed below. Nothing fixed |
 | Five small changes that make the setup portable | **Proposed, not approved, not done** |
-| MCP server for Claude | **Plan presented. The user had not said "go"** when they asked for this file. Confirm before building |
+| MCP server for Claude | **Built and tested** (see the update below); the public address is the user's part |
 
 ## Finding 1: `llmster` on the Ubuntu box
 
@@ -76,8 +104,8 @@ Done from the Mac over SSH, after the rest of this file was written. Where the t
 The code itself is portable: no absolute Mac paths, no symlinks, no odd file names. The environment is not.
 
 - **Do not copy `venvs/`** (1.4 GB of Mac binaries). Build a new one on the box.
-- **`requirements.txt` does not install on Linux as it is.** Lines 49 and 66–70 are Mac-only: `ocrmac` and five
-  `pyobjc-*`. Its first line names a `setup.sh` that is no longer in the folder.
+- **`requirements.txt` does not install on Linux as it is.** Six lines are Mac-only: `ocrmac` and five `pyobjc-*`.
+  On the box the packages were installed with `pip install -c requirements.txt <names>`, which skips them.
 - **`torch` on Linux pulls several GB of NVIDIA libraries by default.** Without an NVIDIA card, install with
   `--extra-index-url https://download.pytorch.org/whl/cpu`.
 - **Python:** the pins were made on 3.11; Ubuntu 24.04 ships 3.12. Not tested on 3.12.
