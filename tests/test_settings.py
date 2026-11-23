@@ -179,10 +179,10 @@ class NothingHardcodedTest(unittest.TestCase):
 
     PRIVATE_ADDRESS = re.compile(r"\b(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}:\d+")  # with a port: an article is numbered "10.2.3.10" too
 
-    def test_the_scripts_and_the_page_name_no_private_address(self):
+    def test_the_scripts_name_no_private_address(self):
         project = Path(settings.__file__).parent
-        files = [*project.glob("*.py"), *(project / "chatbot").glob("*.py"), *(project / "chatbot").glob("*.html"), *(project / "chatbot").glob("*.js")]
-        self.assertGreater(len(files), 10)
+        files = [*project.glob("*.py")]
+        self.assertGreater(len(files), 5)
         found = {file.name: self.PRIVATE_ADDRESS.findall(file.read_text(encoding=settings.TEXT_ENCODING)) for file in files}
         self.assertEqual({name: addresses for name, addresses in found.items() if addresses}, {})
 

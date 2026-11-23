@@ -3,9 +3,10 @@
 import { InMemoryTransport, type JSONRPCMessage, type McpServer } from "@modelcontextprotocol/server";
 import { createMcpHandler } from "agents/mcp/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createServer, SEARCH_FAILED, SEARCH_UNAVAILABLE, SERVER_INSTRUCTIONS } from "../src/server";
+import { FIGURE_TOOL_NAME, MAX_FIGURE_BYTES, NO_FIGURE_ID, PNG_MEDIA_TYPE, TOO_LARGE } from "../src/figure";
+import { createServer, FIGURE_FAILED, SEARCH_FAILED, SEARCH_UNAVAILABLE, SERVER_INSTRUCTIONS } from "../src/server";
 import { TOOL_NAME } from "../src/tool";
-import { EmbeddingUnavailable, type Embedder, type Store } from "../src/types";
+import { EmbeddingUnavailable, type Embedder, type FigureFile, type Store } from "../src/types";
 import { GOLDEN } from "./golden";
 import { FakeEmbedder, FakeStore } from "./fakes";
 
@@ -44,8 +45,13 @@ async function connect(server: McpServer) {
   return { initialized, request };
 }
 
-async function callTool(args: Record<string, unknown>, embedder: Embedder = new FakeEmbedder(), name = TOOL_NAME) {
-  const { request } = await connect(await createServer(new FakeStore(), embedder));
+async function callTool(
+  args: Record<string, unknown>,
+  embedder: Embedder = new FakeEmbedder(),
+  name = TOOL_NAME,
+  store: Store = new FakeStore(),
+) {
+  const { request } = await connect(await createServer(store, embedder));
   return request("tools/call", { name, arguments: args });
 }
 
@@ -64,15 +70,19 @@ describe("the server", () => {
     expect(SERVER_INSTRUCTIONS).toBe(GOLDEN.server.instructions);
   });
 
-  it("lists one tool, described as Python describes it, with the rules after its description", async () => {
+  it("lists search_norms, described as Python describes it but for the rule on figures, and get_figure", async () => {
     const { request } = await connect(await createServer(new FakeStore(), new FakeEmbedder()));
     const tools = (await request("tools/list")).result?.tools as Record<string, unknown>[];
-    expect(tools).toHaveLength(1);
-    const [tool] = tools;
+    expect(tools.map((listed) => listed.name)).toEqual([TOOL_NAME, FIGURE_TOOL_NAME]);
+    const [tool, figureTool] = tools;
     expect(tool).toMatchObject({
       name: GOLDEN.tool.name,
       title: GOLDEN.tool.title,
       description: GOLDEN.tool.description,
+    });
+    expect(figureTool?.annotations).toEqual({ readOnlyHint: true, idempotentHint: true, openWorldHint: false });
+    expect((figureTool?.inputSchema as { properties: Record<string, unknown> }).properties).toEqual({
+      id: { type: "string", description: expect.stringContaining(TOOL_NAME) },
     });
     expect(tool?.annotations).toEqual({ readOnlyHint: true, idempotentHint: true, openWorldHint: false });
     const { $schema, ...schema } = tool?.inputSchema as Record<string, unknown>;
@@ -157,5 +167,65 @@ describe("a call", () => {
     const again = await request("tools/call", { name: TOOL_NAME, arguments: { article: "2.3.1" } });
     expect(again.result).toEqual(first.result);
     expect(JSON.stringify(again.result)).toContain("[1] T 1/2025");
+  });
+});
+
+describe("a call of get_figure", () => {
+  const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
+  const FILE: FigureFile = {
+    figure: { id: "t-1-2025/fig-1", url: "https://f.example.test/1.png", page: 4, width: 1, height: 1, caption: "" },
+    code: "T 1/2025",
+    size: PNG.length,
+    bytes: PNG.buffer,
+  };
+
+  it("answers with the figure's header and the picture as an image", async () => {
+    const store = new FakeStore(undefined, new Map([[FILE.figure.id, FILE]]));
+    const response = await callTool({ id: FILE.figure.id }, new FakeEmbedder(), FIGURE_TOOL_NAME, store);
+    expect(response.result).toEqual({
+      content: [
+        { type: "text", text: "Figure t-1-2025/fig-1 · T 1/2025 (PDF p. 4)\nhttps://f.example.test/1.png" },
+        { type: "image", data: "iVBORw==", mimeType: PNG_MEDIA_TYPE },
+      ],
+      isError: false,
+    });
+    expect(store.calls.at(-1)).toEqual({ method: "figure", args: [FILE.figure.id, MAX_FIGURE_BYTES] });
+  });
+
+  it("whatever types the model sent for the id, is answered by the tool and not refused by the SDK", async () => {
+    for (const args of [{}, { id: 7 }, { id: null }, { id: "  " }]) {
+      const response = await callTool(args, new FakeEmbedder(), FIGURE_TOOL_NAME);
+      expect(response.result, JSON.stringify(args)).toEqual({
+        content: [{ type: "text", text: NO_FIGURE_ID }],
+        isError: true,
+      });
+    }
+  });
+
+  it("of a figure too large to hand over gives its link, as text only", async () => {
+    const large = { ...FILE, size: MAX_FIGURE_BYTES + 1 };
+    const store = new FakeStore(undefined, new Map([[FILE.figure.id, large]]));
+    const response = await callTool({ id: FILE.figure.id }, new FakeEmbedder(), FIGURE_TOOL_NAME, store);
+    const content = response.result?.content as { type: string; text: string }[];
+    expect(response.result?.isError).toBe(false);
+    expect(content).toHaveLength(1);
+    expect(content[0]?.text).toContain(FILE.figure.url);
+    expect(content[0]?.text).toContain(TOO_LARGE.split("{size}")[0]);
+  });
+
+  it("for an unknown figure is an error with text only", async () => {
+    const response = await callTool({ id: "x" }, new FakeEmbedder(), FIGURE_TOOL_NAME);
+    expect(response.result).toMatchObject({ isError: true, content: [{ type: "text" }] });
+    expect((response.result?.content as unknown[]).length).toBe(1);
+  });
+
+  it("that fails is told only that it failed, and the reason goes to the log", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    const failure = new Error(`boom at ${INTERNAL_ADDRESS}`);
+    const store = new FakeStore(undefined, new Map(), failure);
+    const response = await callTool({ id: "x" }, new FakeEmbedder(), FIGURE_TOOL_NAME, store);
+    expect(response.result).toEqual({ content: [{ type: "text", text: FIGURE_FAILED }], isError: true });
+    expect(JSON.stringify(response)).not.toContain(INTERNAL_ADDRESS);
+    expect(log).toHaveBeenCalledWith(failure);
   });
 });

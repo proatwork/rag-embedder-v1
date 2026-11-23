@@ -1,6 +1,8 @@
-// The rules for searching and citing (mcp-instructions.md at the project's root), with the tokens of ask.SEARCH_TOKENS
+// The rules for searching and citing (worker/mcp-instructions.md), with the tokens of ask.SEARCH_TOKENS
 // replaced, as mcp_server.load_rules gives them: they name the words the excerpts use, so that the two cannot differ.
-import rulesFile from "../../mcp-instructions.md";
+// The file is the whole prompt. Its rule on figures names get_figure, its id and tool.ts FIGURE_LINE in plain text, not
+// by tokens: rules.test.ts fails when they no longer match the code.
+import rulesFile from "../mcp-instructions.md";
 import {
   AMENDED_MARK,
   ARTICLE_PREFIX,
@@ -56,7 +58,7 @@ export function renderRules(text: string): string {
   return rules;
 }
 
-/** The rules of mcp-instructions.md, as mcp_server.load_rules() gives them. */
+/** The rules of mcp-instructions.md with their tokens replaced: the whole prompt. */
 export function loadRules(): string {
   return renderRules(rulesFile);
 }

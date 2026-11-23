@@ -1,21 +1,17 @@
-"""Tests of the picture references in the chunks (json_to_chunks.py) and their display (search.py).
+"""Tests of the picture references in the chunks (json_to_chunks.py). How search.py showed them is in _archive/tests.
 
 Run from the project folder with the virtual environment's interpreter:
     venvs/bin/python -m unittest discover -s tests -v
 No server and no tokenizer download are needed: sizes are counted in words.
 """
 
-import io
 import unittest
-from contextlib import redirect_stdout
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from docling_core.types.doc import DocItemLabel, DoclingDocument, ImageRef, Size
 from docling_core.types.doc.document import TableCell, TableData
 
 import json_to_chunks as jc
-import search
 from json_to_chunks import (
     BLOCK_HEADING, BLOCK_TABLE, BLOCK_TEXT, KIND_ARTICLE, KIND_FRAGMENTED, KIND_TABLE, Block, Picture, Sizer, Unit,
 )
@@ -217,15 +213,12 @@ class RecordTest(unittest.TestCase):
         self.assertEqual((record["label"], record["caption"], record["pdf_pages"]), ("7.10–7.11", "TABEL 7.1", [36, 37]))
         self.assertEqual((record["status"], record[jc.REPEALED_ON_KEY], record[jc.AMENDED_BY_KEY], record[jc.GAZETTE_KEY]), (jc.STATUS_REPEALED, "2026-08-25", ["Ordinul 1"], "M. Of. 1"))
         self.assertEqual(record["embed_text"], f"{CODE} > Cap. 7 > 7.10–7.11 > TABEL 7.1\na | b")  # nothing of the citation is embedded
-        self.assertEqual(search.citation(record), f"{CODE}, pct. 7.10–7.11, TABEL 7.1 — Titlu (ed. 2013, M. Of. 1, PDF p. 36–37)")
-        self.assertEqual(search.status_words(record), "abrogat din 25.08.2026; text original, modificat ulterior prin: Ordinul 1")
 
     def test_a_chunk_of_a_norm_with_nothing_optional_has_empty_fields(self):
         entry = {"code": CODE, "title": "Titlu", "year": 2025, "status": jc.STATUS_IN_FORCE}
         article = jc.Chunk(KIND_ARTICLE, "art-1", 0, (), ["1"], "Art. 1", "t", (), 1)
         record = jc.chunk_record(article, entry, "doc", WordSizer(), None, None, Path("/p/json"), Path("/p/chunks"))
         self.assertEqual((record[jc.AMENDED_BY_KEY], record[jc.REPEALED_ON_KEY], record[jc.GAZETTE_KEY], record["pdf_pages"]), ([], None, None, None))
-        self.assertEqual(search.citation(record), f"{CODE}, Art. 1 — Titlu (ed. 2025)")
 
     def test_note_adds_up_to_the_pictures_of_the_document(self):
         doc = DoclingDocument(name="t")
@@ -240,39 +233,6 @@ class RecordTest(unittest.TestCase):
             note,
             "6 pictures: 1 in embedded chunks, 1 only in fragmented chunks, 1 cut with the contents, 1 not placed, 1 file missing, 1 without a file",
         )
-
-
-class SearchDisplayTest(unittest.TestCase):
-    def record(self, images: list[dict]) -> dict:
-        return {
-            "id": "t-1:art-1:0", "doc_code": CODE, "edition_year": 2025, "status": "in_force", "kind": "article", "flags": [],
-            "embed_text": "T 1 > Art. 1\ntext", "text": "text", "images": images,
-        }
-
-    def test_chunk_without_images_shows_none(self):
-        self.assertNotIn("image:", search.describe(self.record([])))
-
-    def test_a_result_shows_its_citation_and_the_status_in_words(self):
-        shown = search.describe(self.record([])).split("\n")
-        self.assertEqual(shown[0], "t-1:art-1:0  article")
-        self.assertEqual(shown[1].strip(), f"{CODE} (ed. 2025)  [în vigoare]")
-
-    def test_images_are_listed_under_the_chunk(self):
-        image = {"path": "../json/a_images/x.png", "ref": "#/pictures/1", "page": 4, "width": 1, "height": 1, "caption": "Figura 2.1  Indicator"}
-        shown = search.describe(self.record([image]))
-        self.assertIn("image: ../json/a_images/x.png  p. 4  Figura 2.1 Indicator", shown)
-
-    def test_load_chunks_makes_the_path_usable_from_where_the_script_runs(self):
-        with TemporaryDirectory() as folder:
-            chunks_dir = Path(folder) / "chunks"
-            chunks_dir.mkdir()
-            record = self.record([{"path": "../json/a_images/x.png", "ref": "#/pictures/1", "page": None, "width": 1, "height": 1, "caption": ""}])
-            (chunks_dir / "doc.jsonl").write_text(__import__("json").dumps(record) + "\n", encoding="utf-8")
-            loaded = search.load_chunks(chunks_dir)
-            image = next(iter(loaded.values()))[0]["images"][0]
-            self.assertEqual(image[search.IMAGE_FILE_KEY], str(Path(folder) / "json" / "a_images" / "x.png"))
-            with redirect_stdout(io.StringIO()):
-                search.print_results([(0.5, next(iter(loaded.values()))[0])])
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ import {
   EmbeddingUnavailable,
   type ChunkRecord,
   type Embedder,
+  type FigureFile,
   type FigureRecord,
   type NormInfo,
   type Scored,
@@ -17,6 +18,7 @@ export const QUERY_INSTRUCTION =
   "Given a question about the Romanian fire-safety norms, retrieve the passages of the norms that answer it";
 export const NORM_FILTER_KEY = "norm"; // the Vectorize metadata field (an indexed string) holding the norm's code
 const URL_SEPARATOR = "/";
+const NOT_IN_BUCKET = ""; // the sha256 of a figure whose PNG the upload did not put in the bucket
 
 interface ChunkRow {
   id: string;
@@ -47,6 +49,7 @@ interface FigureRow {
   chunk_id: string;
   id: string;
   r2_key: string;
+  sha256: string;
   page: number | null;
   width: number;
   height: number;
@@ -81,6 +84,7 @@ export class CloudflareStore implements Store {
   constructor(
     private readonly db: D1Database,
     private readonly index: VectorizeIndex,
+    private readonly bucket: R2Bucket,
     private readonly figuresBaseUrl: string,
   ) {}
 
@@ -117,6 +121,27 @@ export class CloudflareStore implements Store {
     return this.withFigures(results);
   }
 
+  /** Throws when D1 says the figure's PNG is in the bucket and it is not. */
+  async figure(id: string, maxBytes: number): Promise<FigureFile | null> {
+    const row = await this.db
+      .prepare(
+        `SELECT f.id, f.r2_key, f.sha256, f.page, f.width, f.height, f.caption, n.code
+         FROM figures f JOIN norms n ON n.doc_key = f.doc_key WHERE f.id = ?1 AND f.sha256 <> ?2`,
+      )
+      .bind(id, NOT_IN_BUCKET)
+      .first<Omit<FigureRow, "chunk_id"> & { code: string }>();
+    if (!row) return null;
+    const object = await this.bucket.get(row.r2_key);
+    // D1 says it was uploaded: a missing PNG is the server's fault, not the caller's id, and its link answers 404.
+    if (!object) throw new Error(`figure ${row.id}: ${row.r2_key} is missing from the bucket`);
+    const figure = this.toFigure(row);
+    if (object.size > maxBytes) {
+      await object.body.cancel();
+      return { figure, code: row.code, size: object.size, bytes: null };
+    }
+    return { figure, code: row.code, size: object.size, bytes: await object.arrayBuffer() };
+  }
+
   /** The chunks `ids` names, in no particular order; an id with no chunk is left out. */
   private async records(ids: string[]): Promise<ChunkRecord[]> {
     const rows: ChunkRow[] = [];
@@ -137,7 +162,7 @@ export class CloudflareStore implements Store {
     for (const run of batches(rows.map((row) => row.id))) {
       const { results } = await this.db
         .prepare(
-          `SELECT cf.chunk_id, f.id, f.r2_key, f.page, f.width, f.height, f.caption
+          `SELECT cf.chunk_id, f.id, f.r2_key, f.sha256, f.page, f.width, f.height, f.caption
            FROM chunk_figures cf JOIN figures f ON f.id = cf.figure_id
            WHERE cf.chunk_id IN (${placeholders(run.length)}) ORDER BY cf.chunk_id, cf.position`,
         )
@@ -148,17 +173,21 @@ export class CloudflareStore implements Store {
     const figures = new Map<string, FigureRecord[]>();
     for (const row of found) {
       const list = figures.get(row.chunk_id) ?? [];
-      list.push({
-        id: row.id,
-        url: this.figureUrl(row.r2_key),
-        page: row.page,
-        width: row.width,
-        height: row.height,
-        caption: row.caption,
-      });
+      list.push(this.toFigure(row));
       figures.set(row.chunk_id, list);
     }
     return rows.map((row) => toRecord(row, figures.get(row.id) ?? []));
+  }
+
+  private toFigure(row: Omit<FigureRow, "chunk_id">): FigureRecord {
+    return {
+      id: row.id,
+      url: row.sha256 === NOT_IN_BUCKET ? "" : this.figureUrl(row.r2_key), // no link that would answer 404
+      page: row.page,
+      width: row.width,
+      height: row.height,
+      caption: row.caption,
+    };
   }
 
   private figureUrl(key: string): string {

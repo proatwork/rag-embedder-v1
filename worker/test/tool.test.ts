@@ -1,10 +1,10 @@
 // One call of search_norms (the port of search_tool.SearchSession as mcp_server.py runs it), against what Python
 // answers the same arguments with over the same chunks (golden.ts).
 import { describe, expect, it } from "vitest";
-import { pyRepr, SearchCall, BAD_COUNT, NOT_RUN_UNLIMITED, countAsked } from "../src/tool";
-import { format } from "../src/search";
+import { pyRepr, SearchCall, BAD_COUNT, NOT_RUN_UNLIMITED, countAsked, excerpt, figureLine } from "../src/tool";
+import { FIGURES_LINKED, figuresNote, format } from "../src/search";
 import { EmbeddingUnavailable } from "../src/types";
-import { GOLDEN } from "./golden";
+import { GOLDEN, RECORDS } from "./golden";
 import { FakeEmbedder, FakeStore } from "./fakes";
 
 async function call(args: Record<string, unknown>, embedder = new FakeEmbedder()) {
@@ -90,5 +90,58 @@ describe("pyRepr", () => {
     expect(pyRepr(["T 1", 5, 2.5, true, null, { code: "T" }])).toBe("['T 1', 5, 2.5, True, None, {'code': 'T'}]");
     expect(pyRepr(1.5e-7)).toBe("1.5e-07");
     expect(pyRepr(0.0001)).toBe("0.0001");
+  });
+});
+
+describe("figures with links", () => {
+  const URL = "https://figures.example.test/t-1-2025/fig-1.png";
+  const pictured = RECORDS.pictured!;
+  const linked = {
+    ...pictured,
+    images: pictured.images.map((image, place) => (place ? image : { ...image, url: URL })),
+  };
+
+  const allLinked = {
+    ...pictured,
+    images: pictured.images.map((image, place) => ({ ...image, url: `${URL}?${place}` })),
+  };
+
+  it("are listed one per line under the status, with their id, page, link and caption", () => {
+    const lines = excerpt(1, allLinked, "Textul.", false).split("\n");
+    expect(lines[1]).toBe(`Statut: în vigoare · Figuri: ${pictured.images.length} (PDF p. 4–5), ${FIGURES_LINKED}`);
+    expect(lines[2]).toBe(`Figure t-1-2025/fig-1 (PDF p. 4): ${URL}?0 — "Figura 1 Perete"`);
+    expect(lines.slice(2, -1)).toHaveLength(pictured.images.length);
+    expect(lines.at(-1)).toBe("Textul.");
+  });
+
+  it("keep the captions in the note when only some figures have a link, and list only those", () => {
+    const lines = excerpt(1, linked, "Textul.", false).split("\n");
+    expect(lines[1]).toBe(`Statut: în vigoare · ${figuresNote(pictured, false)}`); // as Python gives it
+    expect(lines[2]).toBe(`Figure t-1-2025/fig-1 (PDF p. 4): ${URL} — "Figura 1 Perete"`);
+    expect(lines.slice(3)).toEqual(["Textul."]);
+  });
+
+  it("reach the model through a call", async () => {
+    const store = new FakeStore([allLinked]);
+    const reply = await new SearchCall(store, new FakeEmbedder(), await store.norms()).reply({ article: "9.1" });
+    expect(reply).toEqual({
+      text: ["Searched the article or point 9.1: 1 excerpt", excerpt(1, allLinked, allLinked.embed_text, false)].join(
+        "\n\n",
+      ),
+      isError: false,
+    });
+    expect(reply.text).toContain(`Figure t-1-2025/fig-1 (PDF p. 4): ${URL}?0`);
+  });
+
+  it("leave out what is not known of a figure", () => {
+    expect(figureLine({ id: "x/fig-2", url: URL, page: null, width: 1, height: 1, caption: " " })).toBe(
+      `Figure x/fig-2: ${URL}`,
+    );
+  });
+
+  it("change nothing in an excerpt whose figures have no link: it is the one Python gives", () => {
+    const text = excerpt(1, pictured, "Textul.", false);
+    expect(text).not.toContain("Figure ");
+    expect(text).not.toContain(FIGURES_LINKED);
   });
 });

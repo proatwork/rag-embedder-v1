@@ -2,6 +2,7 @@
 // (golden.ts) and against the literal strings of tests/test_citation.py and tests/test_search_tool.py.
 import { describe, expect, it } from "vitest";
 import {
+  FIGURES_LINKED,
   FIGURES_NOT_SHOWN,
   FIGURES_SHOWN,
   IMAGE_CAPTION_CHARS,
@@ -148,6 +149,12 @@ describe("statusWords", () => {
 });
 
 describe("figuresNote", () => {
+  it("says the figures are linked below, without the captions the list gives, when they are", () => {
+    const pictured = chunk({ images: [figure(4, "Figura 1"), figure(5, "")] });
+    expect(figuresNote(pictured, false, true)).toBe(`Figuri: 2 (PDF p. 4–5), ${FIGURES_LINKED}`);
+    expect(figuresNote(chunk(), false, true)).toBe("");
+  });
+
   it("says nothing of a chunk without pictures", () => {
     expect(figuresNote(chunk())).toBe("");
   });

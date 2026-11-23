@@ -1,8 +1,8 @@
 # Manual: from scans and Word files to text and chunks
 
 Five scripts turn the source documents in `docs/` into Markdown, JSON or plain text, and a sixth cuts the JSON into
-chunks for embedding. Three more embed the chunks, search them, and score the search against questions with known
-answers. Each one works on a whole folder.
+chunks for embedding. One more embeds the chunks, and `upload_to_cloudflare.py` puts them on Cloudflare. Each one
+works on a whole folder.
 
 | Script | Reads | Writes |
 |---|---|---|
@@ -13,10 +13,10 @@ answers. Each one works on a whole folder.
 | `docx_to_txt.py` | `.docx` files | one `.txt` per file (own code, nothing dropped) |
 | `json_to_chunks.py` | the `.json` files of the three Docling scripts | one `.jsonl` per file, one chunk per line |
 | `embed_chunks.py` | the `.jsonl` chunk files | one `.npz` per file, one vector per chunk |
-| `search.py` | the chunk files and their vectors | the closest chunks to a question, on screen |
-| `eval_retrieval.py` | the same, and a file of questions | how often the right article is found, on screen |
 
-The search is also being moved to Cloudflare, as an MCP server in `worker/`: see *The MCP Worker* at the end.
+The search runs on Cloudflare, as an MCP server in `worker/`: see *The MCP Worker* at the end. The local search
+(`search.py`, `eval_retrieval.py`), the chat (`ask.py`, `chatbot/`) and the Python MCP server are in `_archive/`,
+with their part of this manual (`_archive/MANUAL.md`).
 
 `split_pages.py` and `pdf_to_md_vision.py` are not used for the current documents and now sit in `OLD/` (copy them back
 to this folder to use them: they import `pipeline_common.py` and `pdf_to_md.py`). `pipeline_common.py` holds the code they share. The previous tools are in `OLD/` and are not used by these scripts.
@@ -32,10 +32,10 @@ to this folder to use them: they import `pipeline_common.py` and `pdf_to_md.py`)
 - `pdf_to_md_vision.py` runs only on macOS and needs the `ocrmac` package, which is in the virtual environment.
 - `json_to_chunks.py` needs `transformers` and `semchunk`, both in the virtual environment, and downloads a
   tokenizer from Hugging Face the first time it runs (see its section).
-- `embed_chunks.py`, `search.py` and `eval_retrieval.py` do not run the embedding model themselves. They ask a
+- `embed_chunks.py` does not run the embedding model itself. It asks a
   server for the vectors: LM Studio at the address `settings.env` gives (`NORMS_EMBEDDING_SERVER`; see *Settings* in
   `COMMANDS.md`), with the model `text-embedding-bge-m3` loaded.
-  When that server is off, or the model is not loaded, none of the three can embed anything. No model weights are
+  When that server is off, or the model is not loaded, it cannot embed anything. No model weights are
   downloaded to this machine. `embed_chunks.py` still needs `transformers` and the tokenizer `json_to_chunks.py`
   downloaded, to count texts that are too long.
 
@@ -46,8 +46,6 @@ to this folder to use them: they import `pipeline_common.py` and `pdf_to_md.py`)
 | `--input-dir DIR` | Required. The files directly inside this folder are converted (subfolders are not searched). |
 | `--output-dir DIR` | Required. Created if missing. Each result is named after its source file. |
 | `--skip-existing` | Skip files whose result already exists and is not empty. Use it to resume a stopped run. |
-
-`search.py` and `eval_retrieval.py` write no files and have their own options (see their sections).
 
 Hidden files and Word lock files (`~$...`) are ignored. A file that fails is reported and the rest still run; the
 script then ends with a non-zero exit status and lists the failed files. A failed file leaves no partial result
@@ -63,7 +61,6 @@ venvs/bin/python docx_to_md.py  --input-dir docs/docx             --output-dir d
 venvs/bin/python docx_to_txt.py --input-dir docs/docx             --output-dir docs_processed/txt
 venvs/bin/python json_to_chunks.py --input-dir docs_processed/md  --output-dir docs_processed/chunks --docx-dir docs/docx
 venvs/bin/python embed_chunks.py   --input-dir docs_processed/chunks --output-dir docs_processed/vectors
-venvs/bin/python eval_retrieval.py --chunks-dir docs_processed/chunks --vectors-dir docs_processed/vectors --questions eval-questions.jsonl
 ```
 
 The folder names after `--output-dir` are examples; no script assumes any folder. `json_to_chunks.py` reads `.json`
@@ -374,111 +371,11 @@ venvs/bin/python embed_chunks.py --input-dir docs_processed/chunks --output-dir 
   texts are sent as they are: a model that needs a prefix such as `query: ` (`multilingual-e5-large`) is not
   supported as the script stands.
 
-## `search.py`
-
-Shows the chunks closest to a question, or the chunks of one article.
-
-```sh
-venvs/bin/python search.py --chunks-dir docs_processed/chunks --vectors-dir docs_processed/vectors "perete antifoc"
-venvs/bin/python search.py --chunks-dir docs_processed/chunks --article 2.3.2.1.2
-```
-
-| Option | Default | Meaning |
-|---|---|---|
-| `--chunks-dir` | required | The folder `json_to_chunks.py` wrote. |
-| `--vectors-dir` | required for a question | The folder `embed_chunks.py` wrote from those chunks. |
-| `--top` | `5` | How many results to show. |
-| `--doc` | all norms | Only this norm, by its code: `--doc "P118-1/2025"`. |
-| `--article` | | List every chunk holding this article or paragraph number, tables included. The server is not asked. |
-| `--config`, `--server` | | As for `embed_chunks.py`. |
-
-- Each result shows its score (1 is identical text; unrelated text is not 0, compare scores only with each other),
-  the chunk id, the kind and flags, the citation with the norm's status in words, the breadcrumb, and the start of the text.
-- The question is embedded by the server, with the model named in the `.npz` files, so a search needs the server
-  running with that model loaded. Its `ş ţ` become `ș ț`, as in the chunks. Letters typed without diacritics are
-  left as typed.
-- `... changed after its vectors were made: run embed_chunks.py again` means the chunk file was written again since
-  it was embedded. `no vectors for ...` means the file was never embedded.
-- The pictures of a result's chunk are listed under it as `image:` lines (the file, the PDF page, the start of the caption). The path
-  is made from `--chunks-dir`, so it opens from where the script runs. `ask.py` shows them the same way.
-- A number such as `4.1` exists in several norms; add `--doc` to `--article` to see one.
-- `--article` asks the server nothing and works without it.
-
-## `eval_retrieval.py`
-
-Searches every question of a file and reports where the article that answers it came.
-
-```sh
-venvs/bin/python eval_retrieval.py --chunks-dir docs_processed/chunks --vectors-dir docs_processed/vectors --questions eval-questions.jsonl
-venvs/bin/python eval_retrieval.py --chunks-dir docs_processed/chunks --questions eval-questions.jsonl --check-questions
-```
-
-| Option | Default | Meaning |
-|---|---|---|
-| `--questions` | required | The questions file (below). |
-| `--strip-diacritics` | off | Also score every question typed without `ă â î ș ț`, in a second table. |
-| `--check-questions` | off | Only check that every answer names a chunk that is embedded. No server, no `--vectors-dir`. |
-| `--chunks-dir`, `--vectors-dir`, `--config`, `--server` | | As for `search.py`. |
-
-### The questions file
-
-One JSON object per line:
-
-```json
-{"question": "Ce rezistență la foc trebuie să aibă un perete antifoc?", "doc": "P118-1/2025", "articles": ["2.3.2.1.2"], "author": "me"}
-{"question": "De la ce înălțime se consideră o clădire ca fiind înaltă?", "doc": "P118-1/2025", "ids": ["p118-1-2025:art-1.2.1:16"]}
-```
-
-| Key | Meaning |
-|---|---|
-| `question` | As you would type it. |
-| `doc` | The norm's code, as in `chunk-config.json`. |
-| `articles` | The article or paragraph numbers that answer it. A result counts when it is a chunk of that norm holding one of them (also as the second of two joined articles), or a table of that article. |
-| `ids` | For text with no number, one table, or one piece of a long article. A chunk id without its last part (`p118-1-2025:sec-3-tab1`) stands for all its pieces; a whole chunk id (`...:art-1.2.1:16`) for that piece only. It must match exactly: `sec-1` does not count `sec-18`. |
-| `author` | Optional. With more than one author in the file, the scores are also printed per author. |
-
-- A question needs `articles` or `ids`; it may have both. Find them with `search.py --article N`.
-- Use `ids` with a whole chunk id for a definition: all the definitions of P118-1 are article `1.2.1`, which is
-  over 80 chunks, and `"articles": ["1.2.1"]` would count any of them. Piece numbers move when the chunker's
-  settings change; `--check-questions` only notices an id that no longer exists.
-- A question naming a norm, number or id that no embedded chunk has stops the run with the line number. It is a
-  mistake in the file, not a miss.
-
-### Reading the result
-
-```
-                         n   top 1   top 5  top 10     MRR
-all                     30     60%     83%     90%    0.70
-by norm:
-  P118-1/2025           15     67%     87%     93%    0.75
-```
-
-(The numbers above only show the layout.)
-
-- `top 5` is the share of questions whose answer is among the first five results; this is the one to watch, since
-  five chunks is about what an answering step would be given. `MRR` is the mean of 1/rank, counting an answer
-  below rank 10 as zero.
-- Every question is searched in all ten norms, not only in its own.
-- Below the tables, every question is listed with the rank of its answer. For one not found in the first 10, the
-  three chunks that came first are listed.
-- Keep the output of a run (`> eval-2026-10-10.txt`) to compare with the next one.
-
-### The questions that are there
-
-`eval-questions.jsonl` holds 30 questions written by Claude (`"author": "claude"`): 15 on P118-1/2025, 4 on
-P118/2-2013, 3 on P118/3-2015, 2 on the parking norm and 1 on each of the other five. Six are typed without
-diacritics, eight are answered in a table, and two can only be answered from a `broken_chars` table of `sp28_15`.
-
-**Their score is an upper bound.** Each answer was found by reading the chunks, so the wording leans toward the
-norm's, and they are not the questions asked at work. A bad score is real; a good one is not yet proof. Delete or
-reword the ones you would never ask, and add your own with another `author`: the score per author then shows how
-much the first set flatters the search.
-
 ## The MCP Worker (`worker/`)
 
 The search as an MCP server on Cloudflare, so that it answers when this Mac and the Ubuntu box are off. It does what
-`mcp_server.py` does: one tool, `search_norms`, by meaning (`query`) or by number (`article`), with the same
-excerpts, citations, status words and rules (`mcp-instructions.md`, read at build time). OCR and chunking stay on
+`mcp_server.py` (now in `_archive/`) did: one tool, `search_norms`, by meaning (`query`) or by number (`article`), with the same
+excerpts, citations, status words and rules (`worker/mcp-instructions.md`, read at build time; it is the whole prompt). OCR and chunking stay on
 the Mac.
 
 | Part | Holds |
@@ -516,12 +413,10 @@ nothing to search.
 Tests and `wrangler types` start a local runtime that listens on a port. Inside Claude Code's sandbox that is refused
 (`listen EPERM`) unless `sandbox.network.allowLocalBinding` is on.
 
-`test/golden.ts` holds what the Python search gives for fixture chunks; the tests check the Worker gives the same.
-After changing `search.py` or `search_tool.py`, write it again from the project folder:
-
-```sh
-venvs/bin/python worker/test/make_golden.py worker/test/golden.ts
-```
+`test/golden.ts` holds what the Python search gave for fixture chunks; the tests check the Worker gives the same.
+The Python search is archived, so the file is now fixed: when the Worker's output changes on purpose, change the
+tests that compare with it. `_archive/make_golden.py` wrote it; it is kept for reference and no longer runs as it is
+(the archived `mcp_server.py` looks for the prompt next to itself).
 
 ### Setting up Cloudflare (once, not done yet)
 
@@ -530,7 +425,7 @@ npx wrangler d1 create norms                       # put the id it prints into w
 npm run db:migrate:remote
 npx wrangler vectorize create norms --dimensions=1024 --metric=cosine
 npx wrangler vectorize create-metadata-index norms --propertyName=norm --type=string   # before any vector is added
-openssl rand -hex 32                               # the key; keep it, as for mcp_server.py
+openssl rand -hex 32                               # the key; keep it
 npx wrangler secret put MCP_KEY                    # paste the key when asked
 npm run deploy
 ```
@@ -595,8 +490,8 @@ claude mcp add --transport http norms https://norms-mcp.<your-subdomain>.workers
 | `src/index.ts` | the entry: key check, then the MCP handler (`agents` `createMcpHandler`, stateless) |
 | `src/auth.ts` | the bearer key check |
 | `src/store.ts` | D1 queries, the Vectorize search, the Workers AI embedding |
-| `src/search.ts`, `src/tool.ts`, `src/rules.ts`, `src/server.ts` | the port of `search.py`, `search_tool.py` and the tool's description |
+| `src/search.ts`, `src/tool.ts`, `src/rules.ts`, `src/server.ts` | the port of the archived `search.py`, `search_tool.py` and the tool's description |
 | `src/types.ts` | what the data layer and the search logic exchange |
 
-Where it still differs from `mcp_server.py`: a call to an unknown tool gets the MCP library's own error, not
+Where it still differs from the archived `mcp_server.py`: a call to an unknown tool gets the MCP library's own error, not
 `NO_SUCH_TOOL`; the figures are still said to be not shown (links to them come with R2).

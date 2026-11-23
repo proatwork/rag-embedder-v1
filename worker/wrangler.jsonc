@@ -4,6 +4,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "norms-mcp",
   "main": "src/index.ts",
+  "account_id": "2ef6ac02b4da8a58bb997910ac9df918",
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "ai": { "binding": "AI" },
@@ -13,14 +14,16 @@
       "binding": "DB",
       "database_name": "norms",
       // Replace with the id `npx wrangler d1 create norms` prints.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "395d90c0-8977-4c0a-8b80-4f9517f09a84",
       "migrations_dir": "migrations",
     },
   ],
+  // The figure PNGs (upload_to_cloudflare.py --bucket), which get_figure reads to hand a picture to the model.
+  "r2_buckets": [{ "binding": "FIGURES", "bucket_name": "norms-figures" }],
   "vars": {
     // Public R2 address the figure links start with; empty until the bucket exists.
-    "FIGURES_BASE_URL": "",
+    "FIGURES_BASE_URL": "https://pub-c4128bc7bcab46feaccb01dc05ce5d35.r2.dev",
   },
-  // The rules for searching and citing (../mcp-instructions.md) are imported as text.
+  // The rules for searching and citing (mcp-instructions.md) are imported as text.
   "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
 }

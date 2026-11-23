@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { carriesKey, notConfigured, unauthorized, usableKey } from "../src/auth";
+import { carriesKey, notConfigured, refusedKeyShape, unauthorized, usableKey } from "../src/auth";
 
 const KEY = "k".repeat(31) + "!";
 
@@ -58,6 +58,65 @@ describe("carriesKey", () => {
 
   it("rejects an empty header value", async () => {
     expect(await carriesKey(requestWith(""), KEY)).toBe(false);
+  });
+});
+
+describe("refusedKeyShape", () => {
+  const fine = {
+    header: true,
+    bearer: true,
+    words: 2,
+    keyChars: KEY.length,
+    expectedChars: KEY.length,
+    quoted: false,
+    unusual: false,
+  };
+
+  it("describes a header of the right shape", () => {
+    expect(refusedKeyShape(requestWith(`Bearer ${KEY}`), KEY)).toEqual(fine);
+  });
+
+  it("tells a missing header from an empty one", () => {
+    expect(refusedKeyShape(requestWith(), KEY)).toEqual({
+      ...fine,
+      header: false,
+      bearer: false,
+      words: 0,
+      keyChars: 0,
+    });
+    expect(refusedKeyShape(requestWith(""), KEY)).toEqual({
+      ...fine,
+      header: true,
+      bearer: false,
+      words: 0,
+      keyChars: 0,
+    });
+  });
+
+  it("shows a missing scheme, a short key, quotes and characters a key never has", () => {
+    expect(refusedKeyShape(requestWith(KEY), KEY)).toMatchObject({ bearer: false, words: 1, keyChars: 0 });
+    expect(refusedKeyShape(requestWith(`Bearer ${KEY.slice(1)}`), KEY)).toMatchObject({ keyChars: KEY.length - 1 });
+    expect(refusedKeyShape(requestWith(`Bearer "${KEY}"`), KEY)).toMatchObject({
+      quoted: true,
+      keyChars: KEY.length + 2,
+    });
+    for (const quoted of [`'${KEY}'`, `"${KEY}`, `${KEY}'`]) {
+      expect(refusedKeyShape(requestWith(`Bearer ${quoted}`), KEY)).toMatchObject({ quoted: true });
+    }
+    for (const odd of [`${KEY}é`, `${KEY}\x7f`, `k\x7fk`]) {
+      expect(refusedKeyShape(requestWith(`Bearer ${odd}`), KEY)).toMatchObject({ unusual: true });
+    }
+    expect(refusedKeyShape(requestWith(`Bearer extra ${KEY}`), KEY)).toMatchObject({ words: 3 });
+    expect(refusedKeyShape(requestWith("Bearer"), KEY)).toMatchObject({ bearer: true, words: 1, keyChars: 0 });
+  });
+
+  it.each(["bearer", "BEARER"])("knows the scheme spelled %s", (scheme) => {
+    expect(refusedKeyShape(requestWith(`${scheme} x`), KEY)).toMatchObject({ bearer: true });
+  });
+
+  it("never holds a character of the key", () => {
+    const secret = "Z".repeat(40);
+    expect(JSON.stringify(refusedKeyShape(requestWith(`Bearer ${secret}`), secret))).not.toContain("Z");
   });
 });
 

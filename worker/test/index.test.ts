@@ -2,12 +2,20 @@
 import { createExecutionContext, waitOnExecutionContext } from "cloudflare:test";
 import { env } from "cloudflare:workers";
 import { beforeAll, describe, expect, it } from "vitest";
+import { FIGURE_TOOL_NAME } from "../src/figure";
 import worker, { MCP_PATH } from "../src/index";
 import { EMBEDDING_DIMENSIONS } from "../src/store";
 
 const URL_BASE = "http://localhost"; // a Host the handler's default allowlist accepts
 const PROTOCOL_VERSION = "2025-06-18";
 const VECTOR = Array.from({ length: EMBEDDING_DIMENSIONS }, () => 0.1);
+
+const FIGURE_ID = "p118-2-2013/fig-12";
+const FIGURE_KEY = "p118-2-2013/fig-12-abc.png";
+const FIGURES_BASE_URL = "https://figures.example.test";
+const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47]);
+// The test config leaves the address empty; Env types it as the deployed one.
+const WITH_LINKS = { FIGURES_BASE_URL } as unknown as Partial<Env>;
 
 const fakeAi = { run: async () => ({ data: [VECTOR] }) } as unknown as Ai;
 const fakeIndex = {
@@ -54,7 +62,15 @@ beforeAll(async () => {
        VALUES ('p118-2-2013:art-2.56:0', 'P118-II', 1, 'article', 'Art. 2.56', '2.56', '["2.56"]', 'Textul articolului.', 'P118/2-2013 › Art. 2.56\nTextul articolului.')`,
     ),
     env.DB.prepare("INSERT INTO chunk_articles (chunk_id, number) VALUES ('p118-2-2013:art-2.56:0', '2.56')"),
+    env.DB.prepare(
+      `INSERT INTO figures (id, doc_key, r2_key, sha256, page, width, height, caption)
+       VALUES ('${FIGURE_ID}', 'P118-II', '${FIGURE_KEY}', 'sha', 36, 1, 1, 'Figura 12')`,
+    ),
+    env.DB.prepare(
+      `INSERT INTO chunk_figures (chunk_id, figure_id, position) VALUES ('p118-2-2013:art-2.56:0', '${FIGURE_ID}', 1)`,
+    ),
   ]);
+  await env.FIGURES.put(FIGURE_KEY, PNG);
 });
 
 describe("the key", () => {
@@ -83,11 +99,11 @@ async function reply<T>(response: Response): Promise<T> {
 }
 
 interface ToolResult {
-  result: { content: { text: string }[]; isError?: boolean };
+  result: { content: { type: string; text?: string; data?: string; mimeType?: string }[]; isError?: boolean };
 }
 
-function toolCall(id: number, args: Record<string, string>) {
-  return { jsonrpc: "2.0", id, method: "tools/call", params: { name: "search_norms", arguments: args } };
+function toolCall(id: number, args: Record<string, string>, name = "search_norms") {
+  return { jsonrpc: "2.0", id, method: "tools/call", params: { name, arguments: args } };
 }
 
 describe("MCP at /mcp", () => {
@@ -97,11 +113,11 @@ describe("MCP at /mcp", () => {
     expect((await reply<{ result: { serverInfo: { name: string } } }>(response)).result.serverInfo.name).toBe("norms");
   });
 
-  it("lists search_norms with the norms from D1", async () => {
+  it("lists search_norms with the norms from D1, and get_figure", async () => {
     const listed = await reply<{ result: { tools: { name: string; description: string }[] } }>(
       await call({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }),
     );
-    expect(listed.result.tools.map((tool) => tool.name)).toEqual(["search_norms"]);
+    expect(listed.result.tools.map((tool) => tool.name)).toEqual(["search_norms", FIGURE_TOOL_NAME]);
     expect(listed.result.tools[0]?.description).toContain("P118/2-2013");
   });
 
@@ -115,6 +131,19 @@ describe("MCP at /mcp", () => {
     const result = await reply<ToolResult>(await call(toolCall(4, { query: "hidranți interiori" })));
     expect(result.result.isError).toBeFalsy();
     expect(result.result.content[0]?.text).toContain("Art. 2.56");
+  });
+
+  it("lists each figure of an excerpt with its public link, and hands one over from R2", async () => {
+    const found = await reply<ToolResult>(await call(toolCall(6, { article: "2.56" }), env.MCP_KEY, WITH_LINKS));
+    expect(found.result.content[0]?.text).toContain(
+      `Figure ${FIGURE_ID} (PDF p. 36): ${FIGURES_BASE_URL}/${FIGURE_KEY} — "Figura 12"`,
+    );
+
+    const figure = await reply<ToolResult>(
+      await call(toolCall(7, { id: FIGURE_ID }, FIGURE_TOOL_NAME), env.MCP_KEY, WITH_LINKS),
+    );
+    expect(figure.result.isError).toBeFalsy();
+    expect(figure.result.content[1]).toEqual({ type: "image", data: "iVBORw==", mimeType: "image/png" });
   });
 
   it("tells the model when the embedding model cannot be used", async () => {

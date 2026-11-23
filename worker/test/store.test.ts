@@ -29,7 +29,7 @@ function fakeIndex(matches: { id: string; score: number }[]): { index: Vectorize
 
 function storeWith(matches: { id: string; score: number }[] = [], base = BASE) {
   const { index, calls } = fakeIndex(matches);
-  return { store: new CloudflareStore(env.DB, index, base), calls };
+  return { store: new CloudflareStore(env.DB, index, env.FIGURES, base), calls };
 }
 
 async function addNorm(docKey: string, code: string, title: string, extra: Partial<Record<string, unknown>> = {}) {
@@ -100,11 +100,12 @@ async function addFigure(
   width: number,
   height: number,
   caption: string,
+  sha256 = "sha", // '' for a figure uploaded without --bucket
 ) {
   await env.DB.prepare(
-    "INSERT INTO figures (id, doc_key, r2_key, sha256, page, width, height, caption) VALUES (?, ?, ?, 'sha', ?, ?, ?, ?)",
+    "INSERT INTO figures (id, doc_key, r2_key, sha256, page, width, height, caption) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
   )
-    .bind(id, docKey, r2Key, page, width, height, caption)
+    .bind(id, docKey, r2Key, sha256, page, width, height, caption)
     .run();
 }
 
@@ -118,6 +119,8 @@ beforeEach(async () => {
   for (const table of ["chunk_figures", "figures", "chunk_articles", "chunks", "norms"]) {
     await env.DB.prepare(`DELETE FROM ${table}`).run();
   }
+  const { objects } = await env.FIGURES.list();
+  if (objects.length) await env.FIGURES.delete(objects.map((object) => object.key));
 });
 
 describe("CloudflareStore.norms", () => {
@@ -310,6 +313,68 @@ describe("CloudflareStore.nearest", () => {
     const found = await store.nearest([0], 2);
 
     expect(found.map((s) => s.record.images.map((i) => i.id))).toEqual([["n1/fig-1"], ["n1/fig-1"]]);
+  });
+
+  it("gives no link to a figure whose PNG is not in the bucket, nor when no address is set", async () => {
+    await addNorm("doc", "N1", "Norm one");
+    await addChunk("c1", "doc", 1);
+    await addFigure("n1/fig-1", "doc", "n1/fig-1.png", 1, 1, 1, "", "");
+    await addFigure("n1/fig-2", "doc", "n1/fig-2.png", 1, 1, 1, "");
+    await link("c1", "n1/fig-1", 1);
+    await link("c1", "n1/fig-2", 2);
+
+    const [found] = await storeWith([{ id: "c1", score: 0.9 }]).store.nearest([0], 1);
+    const [unaddressed] = await storeWith([{ id: "c1", score: 0.9 }], "").store.nearest([0], 1);
+
+    expect(found?.record.images.map((image) => image.url)).toEqual(["", `${BASE}/n1/fig-2.png`]);
+    expect(unaddressed?.record.images.map((image) => image.url)).toEqual(["", ""]);
+  });
+});
+
+describe("CloudflareStore.figure", () => {
+  const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 1, 2, 3]);
+
+  async function stored(sha256 = "sha") {
+    await addNorm("doc", "N1", "Norm one");
+    await addFigure("n1/fig-1", "doc", "n1/fig 1.png", 4, 10, 20, "Figura 1", sha256);
+    await env.FIGURES.put("n1/fig 1.png", PNG);
+  }
+
+  it("reads the PNG from the bucket, with the figure, its link and its norm's code", async () => {
+    await stored();
+    const file = await storeWith().store.figure("n1/fig-1", PNG.length);
+    expect(file).toMatchObject({
+      code: "N1",
+      size: PNG.length,
+      figure: { id: "n1/fig-1", url: `${BASE}/n1/fig%201.png`, page: 4, width: 10, height: 20, caption: "Figura 1" },
+    });
+    expect(new Uint8Array(file!.bytes!)).toEqual(PNG);
+  });
+
+  it("leaves the PNG out when it is larger than asked, but says how large it is", async () => {
+    await stored();
+    const file = await storeWith().store.figure("n1/fig-1", PNG.length - 1);
+    expect(file).toMatchObject({ size: PNG.length, bytes: null, code: "N1" });
+  });
+
+  it("hands over the PNG without a link when no public address is set", async () => {
+    await stored();
+    const file = await storeWith([], "").store.figure("n1/fig-1", PNG.length);
+    expect(file?.figure.url).toBe("");
+    expect(new Uint8Array(file!.bytes!)).toEqual(PNG);
+  });
+
+  it("has nothing for an unknown id or a figure not uploaded to the bucket", async () => {
+    const { store } = storeWith();
+    expect(await store.figure("n1/fig-1", PNG.length)).toBeNull();
+    await stored("");
+    expect(await store.figure("n1/fig-1", PNG.length)).toBeNull();
+  });
+
+  it("fails, as the server's fault, when D1 says the PNG is in the bucket and it is not", async () => {
+    await stored();
+    await env.FIGURES.delete("n1/fig 1.png");
+    await expect(storeWith().store.figure("n1/fig-1", PNG.length)).rejects.toThrow("missing from the bucket");
   });
 });
 

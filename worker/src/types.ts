@@ -2,7 +2,8 @@
 // Field names follow the chunk records json_to_chunks.py writes, so that the port of search.py and
 // search_tool.py reads the same keys.
 
-/** A picture of a chunk. `url` is empty while no public address for the figures is set. */
+/** A picture of a chunk. `url` is empty while it has no public address: no address for the figures is set, or its PNG
+ * was not put in the bucket. */
 export interface FigureRecord {
   id: string;
   url: string;
@@ -51,6 +52,15 @@ export interface Scored {
   record: ChunkRecord;
 }
 
+/** A figure to hand to the model: what is known of it, the code of its norm, and its PNG (`bytes`), which is null
+ * when the PNG is larger than the caller allows (`size` says how large it is). */
+export interface FigureFile {
+  figure: FigureRecord;
+  code: string;
+  size: number;
+  bytes: ArrayBuffer | null;
+}
+
 /** Where the chunks are. Every method may throw; only EmbeddingUnavailable is told to the model as such. */
 export interface Store {
   /** Every norm, in the order the norms are listed (by code). */
@@ -59,6 +69,8 @@ export interface Store {
   nearest(vector: number[], top: number, code?: string): Promise<Scored[]>;
   /** The chunks that hold the article or point `number`, in the order of the norms and of the text; with `code`, of that norm only. */
   withNumber(number: string, code?: string): Promise<ChunkRecord[]>;
+  /** The figure `id` with its PNG when that is at most `maxBytes`; null when there is no such figure in the bucket. */
+  figure(id: string, maxBytes: number): Promise<FigureFile | null>;
 }
 
 /** Turns a question, already spelled the way the chunks are, into its vector. */

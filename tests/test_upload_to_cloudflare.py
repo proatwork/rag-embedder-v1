@@ -291,6 +291,44 @@ class VectorTest(unittest.TestCase):
         self.assertEqual([len(call.args[1]["documents"]) for call in post.call_args_list], [up.AI_BATCH_SIZE, 1])
         self.assertTrue(np.array_equal(document.vectors, [vector_of(text) for text in document.texts]))  # each on its own chunk
 
+    def test_a_request_holds_at_most_so_many_characters(self):
+        half = "x" * (up.AI_BATCH_CHARS // 2)  # two of them fill a request exactly
+        long = "y" * (up.AI_BATCH_CHARS + 1)
+        batches = up.ai_batches([half, half, "z", long, "w"])
+        self.assertEqual([[len(text) for text in batch] for batch in batches],
+                         [[len(half)] * 2, [1], [len(long)], [1]])  # the long one alone, the rest in order
+        self.assertEqual(up.ai_batches([]), [])
+
+    def test_a_request_too_big_for_the_model_is_split_until_it_fits(self):
+        def picky_post(url, body, timeout, headers=None):
+            if len(body[up.AI_PASSAGES]) > 2:
+                raise ConversionError(f'{url} refused the request with status 400: {{"errors":[{{"message":"AiError: AiError: {up.AI_TOO_BIG} (x)","code":3030}}]}}')
+            return fake_post(url, body, timeout, headers)
+        document = self.fixture.document([chunk(f"art-{n}") for n in range(5)])
+        with mock.patch.object(up, "post_json", side_effect=picky_post) as post:
+            up.embed(document, self.fixture.cache_dir, CREDENTIALS)
+        self.assertEqual([len(call.args[1]["documents"]) for call in post.call_args_list], [5, 2, 3, 1, 2])
+        self.assertTrue(np.array_equal(document.vectors, [vector_of(text) for text in document.texts]))  # in order
+
+    def test_the_error_code_alone_also_splits_a_request(self):
+        def coded_post(url, body, timeout, headers=None):
+            if len(body[up.AI_PASSAGES]) > 1:
+                raise ConversionError(f'{url} refused the request with status 400: {{"errors":[{{"message":"reworded","code":3030}}]}}')
+            return fake_post(url, body, timeout, headers)
+        document = self.fixture.document([chunk("art-1"), chunk("art-2")])
+        with mock.patch.object(up, "post_json", side_effect=coded_post) as post:
+            up.embed(document, self.fixture.cache_dir, CREDENTIALS)
+        self.assertEqual(post.call_count, 3)
+
+    def test_a_single_text_too_big_and_any_other_refusal_are_not_sent_again(self):
+        too_big = ConversionError(f"refused the request with status 400: {up.AI_TOO_BIG}")
+        for error, texts in ((too_big, 1), (ConversionError("refused the request with status 401"), 3)):
+            document = self.fixture.document([chunk(f"art-{n}") for n in range(texts)])
+            with self.subTest(error=str(error)), mock.patch.object(up, "post_json", side_effect=error) as post:
+                with self.assertRaises(ConversionError):
+                    up.embed(document, self.fixture.cache_dir, CREDENTIALS)
+                self.assertEqual(post.call_count, 1)
+
     def test_only_changed_texts_are_embedded_again(self):
         with mock.patch.object(up, "post_json", side_effect=fake_post):
             up.embed(self.fixture.document([chunk("art-1"), chunk("art-2")]), self.fixture.cache_dir, CREDENTIALS)

@@ -24,6 +24,35 @@ export async function carriesKey(request: Request, key: string): Promise<boolean
   return crypto.subtle.timingSafeEqual(given, expected);
 }
 
+/** What a refused Authorization header looked like, for the log: its shape only, never a character of the key. */
+export interface RefusedKeyShape {
+  header: boolean; // whether there was an Authorization header at all
+  bearer: boolean; // whether its first word is the Bearer scheme
+  words: number; // words in it; the scheme and the key make 2
+  keyChars: number; // characters of what came after the scheme
+  expectedChars: number; // characters of the key the server holds
+  quoted: boolean; // whether that part starts or ends with a quote
+  unusual: boolean; // whether it has characters a key never has: outside printable ASCII
+}
+
+const QUOTES = /^["']|["']$/; // curly ones arrive as other bytes, which `unusual` catches
+const KEY_CHARS = /^[\x21-\x7e]*$/;
+
+export function refusedKeyShape(request: Request, key: string): RefusedKeyShape {
+  const value = request.headers.get(AUTHORIZATION);
+  const [scheme = "", ...rest] = (value ?? "").trim().split(/\s+/);
+  const given = rest.join(" ");
+  return {
+    header: value !== null,
+    bearer: scheme.toLowerCase() === BEARER_SCHEME,
+    words: value?.trim() ? rest.length + 1 : 0,
+    keyChars: given.length,
+    expectedChars: key.trim().length,
+    quoted: QUOTES.test(given),
+    unusual: !KEY_CHARS.test(given.replace(/ /g, "")),
+  };
+}
+
 export function unauthorized(): Response {
   return new Response(NO_KEY_REPLY, { status: UNAUTHORIZED, headers: { "WWW-Authenticate": "Bearer" } });
 }

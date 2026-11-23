@@ -1,6 +1,8 @@
 // The port of search_tool.py for the MCP server: one call of search_norms(query, norm, article, count), on its own,
-// as mcp_server.py runs it (a session without a limit of calls, whose excerpts are numbered from 1 and whose figures
-// the reader is not shown). The words that frame the excerpts are English; the excerpts quote the norms in Romanian.
+// as mcp_server.py runs it (a session without a limit of calls, whose excerpts are numbered from 1). Unlike Python's,
+// an excerpt lists each figure that has a public link on a line of its own (FIGURE_LINE), for the user to open and
+// get_figure to load; figures without one the reader is not shown. The words that frame the excerpts are English;
+// the excerpts quote the norms in Romanian.
 import { z } from "zod";
 import {
   DEFAULT_TOP,
@@ -12,11 +14,13 @@ import {
   figuresNote,
   format,
   normalizeRomanian,
+  pagesNote,
   pyStrip,
   reference,
+  shortCaption,
   statusWords,
 } from "./search";
-import type { ChunkRecord, Embedder, NormInfo, Store } from "./types";
+import type { ChunkRecord, Embedder, FigureRecord, NormInfo, Store } from "./types";
 
 export const TOOL_NAME = "search_norms";
 // The tool's parameters. English, as all names a program reads.
@@ -42,6 +46,12 @@ export const COUNT_HELP = "How many excerpts to return (default {count}).";
 export const EXCERPT_HEADER = "[{number}] {citation}";
 export const NOTE_SEPARATOR = " · "; // between the status and the figures, on the line under the citation
 export const EXCERPT_SEPARATOR = LINE_SEPARATOR.repeat(2);
+// A picture of an excerpt that has a public link, on a line of its own under the status: what get_figure takes, where
+// it is, and its caption. The rules (rules.ts) name the "Figure" that starts it.
+export const FIGURE_LINE_PREFIX = "Figure";
+export const FIGURE_LINE = FIGURE_LINE_PREFIX + " {id}{page}: {url}{caption}";
+export const FIGURE_PAGE = " ({page})";
+export const FIGURE_CAPTION = ' — "{caption}"';
 export const RESULT_HEADER_UNLIMITED = "Searched {what}: {found}"; // a session without a limit does not count its calls
 export const FOR_QUERY = 'for "{query}"';
 export const FOR_ARTICLE = "the article or point {article}";
@@ -71,13 +81,33 @@ export interface Reply {
   isError: boolean;
 }
 
+/** A picture as an excerpt lists it (FIGURE_LINE). */
+export function figureLine(image: FigureRecord): string {
+  const page = pagesNote([image.page]);
+  const caption = shortCaption(image);
+  return format(FIGURE_LINE, {
+    id: image.id,
+    page: page ? format(FIGURE_PAGE, { page }) : "",
+    url: image.url,
+    caption: caption ? format(FIGURE_CAPTION, { caption }) : "",
+  });
+}
+
 /** One chunk as the model is given it: its number and citation, then a line with the status of its norm and with its
- * figures when it has any (`figuresShown`: whether the reader is shown them), then `text`. */
+ * figures when it has any (`figuresShown`: whether the reader is shown them), then a line for each figure that has a
+ * link, then `text`. Without any link the excerpt is the one search_tool.py gives. The note says the figures are
+ * linked below only when all of them are (an upload that left some PNGs out of the bucket): otherwise it keeps the
+ * captions, the only thing the model may say of a figure it cannot load. */
 export function excerpt(number: number, record: ChunkRecord, text: string, figuresShown = true): string {
-  const notes = [`${STATUS_LABEL}: ${statusWords(record)}`, figuresNote(record, figuresShown)]
+  const images = record.images ?? [];
+  const linked = images.filter((image) => image.url);
+  const allLinked = linked.length > 0 && linked.length === images.length;
+  const notes = [`${STATUS_LABEL}: ${statusWords(record)}`, figuresNote(record, figuresShown, allLinked)]
     .filter(Boolean)
     .join(NOTE_SEPARATOR);
-  return [format(EXCERPT_HEADER, { number, citation: citation(record) }), notes, text].join(LINE_SEPARATOR);
+  return [format(EXCERPT_HEADER, { number, citation: citation(record) }), notes, ...linked.map(figureLine), text].join(
+    LINE_SEPARATOR,
+  );
 }
 
 /** The norms a call can search, by code in Python's order (by code point), each with its title. */

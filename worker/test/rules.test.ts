@@ -1,12 +1,29 @@
 // The rules for searching and citing, rendered as mcp_server.load_rules() renders mcp-instructions.md.
 import { describe, expect, it } from "vitest";
-import rulesFile from "../../mcp-instructions.md";
+import rulesFile from "../mcp-instructions.md";
+import { ARG_FIGURE_ID, FIGURE_TOOL_NAME } from "../src/figure";
 import { loadRules, renderRules, SEARCH_TOKENS } from "../src/rules";
+import { FIGURE_LINE_PREFIX } from "../src/tool";
 import { GOLDEN } from "./golden";
 
 describe("rules", () => {
-  it("equal what Python renders from the same file", () => {
-    expect(loadRules()).toBe(GOLDEN.rules);
+  it("render as Python renders the same file", () => {
+    expect(renderRules(rulesFile)).toBe(GOLDEN.rules);
+  });
+
+  it("are the whole file, rendered", () => {
+    expect(loadRules()).toBe(renderRules(rulesFile));
+  });
+
+  it("name the figure tool, its argument and the excerpts' figure lines as the code has them", () => {
+    expect(loadRules()).toContain(`\`${FIGURE_TOOL_NAME}\` with its \`${ARG_FIGURE_ID}\``);
+    expect(loadRules()).toContain(`"${FIGURE_LINE_PREFIX} <id> …: <link>"`);
+    expect(loadRules()).toContain('"Figuri: 2 …"');
+  });
+
+  it("tell the model to put the picture mark right before every figure link", () => {
+    expect(loadRules()).toContain("🖼️ right before it");
+    expect(loadRules()).toContain("🖼️ [aici](<link>)");
   });
 
   it("leave no token unreplaced", () => {

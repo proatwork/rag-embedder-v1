@@ -57,7 +57,12 @@ AI_RESULT = "result"
 AI_DATA = "data"
 AI_SUCCESS = "success"
 AI_ERRORS = "errors"
-AI_BATCH_SIZE = 32  # texts per request to Workers AI
+AI_BATCH_SIZE = 32  # texts per request to Workers AI: the most the model takes (its schema's maxItems)
+# The model reads at most 8,192 tokens per request, all its texts together. Romanian takes about 2.5 characters per
+# token at worst, so this many characters stay under it; a request it still finds too big is split (embed_batch).
+AI_BATCH_CHARS = 16_000
+AI_TOO_BIG = "input too big"  # what Workers AI answers to a request over the model's input ...
+AI_TOO_BIG_CODE = '"code":3030'  # ... and the error's code, in case the wording changes
 AI_REQUEST_TIMEOUT = 120  # seconds
 AUTHORIZATION = "Authorization"
 BEARER = "Bearer {token}"
@@ -260,14 +265,38 @@ def ai_vectors(answer: dict, count: int, url: str) -> np.ndarray:
     return vectors
 
 
+def ai_batches(texts: list[str]) -> list[list[str]]:
+    """`texts` in order, cut into requests of at most AI_BATCH_SIZE texts and AI_BATCH_CHARS characters; a text longer
+    than that goes alone."""
+    batches: list[list[str]] = []
+    size = 0
+    for text in texts:
+        if not batches or len(batches[-1]) == AI_BATCH_SIZE or size + len(text) > AI_BATCH_CHARS:
+            batches.append([])
+            size = 0
+        batches[-1].append(text)
+        size += len(text)
+    return batches
+
+
+def embed_batch(texts: list[str], url: str, headers: dict[str, str]) -> np.ndarray:
+    """The vectors of one request's texts. A request Workers AI finds too big is sent again as two halves, down to a
+    single text, which is then too big for the model on its own."""
+    try:
+        return ai_vectors(post_json(url, {AI_PASSAGES: texts}, AI_REQUEST_TIMEOUT, headers), len(texts), url)
+    except ConversionError as error:
+        if not (AI_TOO_BIG in str(error) or AI_TOO_BIG_CODE in str(error)) or len(texts) == 1:
+            raise
+    half = len(texts) // 2
+    return np.concatenate([embed_batch(texts[:half], url, headers), embed_batch(texts[half:], url, headers)])
+
+
 def embed_passages(texts: list[str], credentials: Credentials) -> np.ndarray:
     """One vector per text, from Workers AI, the texts embedded as passages."""
     url = AI_RUN_URL.format(account=credentials.account_id, model=EMBEDDING_MODEL)
     headers = {AUTHORIZATION: BEARER.format(token=credentials.api_token)}
     parts = [np.zeros((0, EMBEDDING_DIMENSIONS), dtype=np.float32)]
-    for start in range(0, len(texts), AI_BATCH_SIZE):
-        batch = texts[start:start + AI_BATCH_SIZE]
-        parts.append(ai_vectors(post_json(url, {AI_PASSAGES: batch}, AI_REQUEST_TIMEOUT, headers), len(batch), url))
+    parts.extend(embed_batch(batch, url, headers) for batch in ai_batches(texts))
     return np.concatenate(parts)
 
 

@@ -43,6 +43,8 @@ export const ACT_SEPARATOR = "; ";
 export const FIGURES_LABEL = "Figuri"; // the instructions name it
 export const FIGURES_SHOWN = "afișate utilizatorului în sursele de sub răspuns";
 export const FIGURES_NOT_SHOWN = "neafișate utilizatorului"; // where nothing shows the reader the pictures (MCP)
+// Where each picture is listed under the note with its link (the Worker; not search.py): its captions are there.
+export const FIGURES_LINKED = "cu linkuri mai jos";
 export const CAPTIONS_LABEL = "legende";
 export const MORE_CAPTIONS = "și alte {count}";
 
@@ -111,7 +113,7 @@ export function shortened(text: string | null | undefined, limit: number): strin
   return line.length > limit ? line.slice(0, limit).join("") + ELLIPSIS : line.join("");
 }
 
-function shortCaption(image: FigureRecord): string {
+export function shortCaption(image: FigureRecord): string {
   return shortened(image.caption, IMAGE_CAPTION_CHARS);
 }
 
@@ -195,12 +197,15 @@ export function statusWords(record: ChunkRecord): string {
 }
 
 /** What is said of a chunk's pictures: how many, on which PDF pages, whether the reader is shown them (`shown`), and
- * the start of the captions they have; empty when it has none. */
-export function figuresNote(record: ChunkRecord, shown = true): string {
+ * the start of the captions they have; empty when it has none. With `linked`, that they are listed below with their
+ * links instead, and no captions, which the list gives. */
+export function figuresNote(record: ChunkRecord, shown = true, linked = false): string {
   const images = record.images ?? [];
   if (!images.length) return "";
   const pages = pagesNote(images.map((image) => image.page));
-  const note = `${FIGURES_LABEL}: ${images.length}${pages ? " (" + pages + ")" : ""}${LIST_SEPARATOR}${shown ? FIGURES_SHOWN : FIGURES_NOT_SHOWN}`;
+  const seen = linked ? FIGURES_LINKED : shown ? FIGURES_SHOWN : FIGURES_NOT_SHOWN;
+  const note = `${FIGURES_LABEL}: ${images.length}${pages ? " (" + pages + ")" : ""}${LIST_SEPARATOR}${seen}`;
+  if (linked) return note;
   let captions = images
     .map(shortCaption)
     .filter(Boolean)

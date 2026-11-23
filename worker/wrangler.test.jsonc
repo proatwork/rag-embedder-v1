@@ -14,6 +14,7 @@
       "migrations_dir": "migrations",
     },
   ],
+  "r2_buckets": [{ "binding": "FIGURES", "bucket_name": "norms-figures" }], // local, in the test runner
   "vars": { "FIGURES_BASE_URL": "" },
   "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
 }

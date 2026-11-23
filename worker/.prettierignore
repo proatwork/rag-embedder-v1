@@ -1,3 +1,5 @@
 worker-configuration.d.ts
 node_modules/
 .wrangler/
+# the prompt: its exact text is what the model reads, and golden.ts holds it
+mcp-instructions.md
