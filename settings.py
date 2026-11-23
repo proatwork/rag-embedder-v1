@@ -1,9 +1,11 @@
 """The one place the scripts take this machine's addresses, ports and keys from.
 
-Every setting has a name (NORMS_...). Its value is looked for in this order:
+Every setting has a name (NORMS_..., or CLOUDFLARE_... for the two that wrangler reads under its own names). Its value
+is looked for in this order:
     1. the environment (export NORMS_EMBEDDING_SERVER=...), which wins;
     2. the file settings.env beside this script, one NAME=value on a line (copy settings.example.env);
     3. the default written here, which suits one machine that runs everything itself.
+       (The Cloudflare account and token have none: without them nothing is uploaded.)
 A script's own option on the command line (--server, --port, ...) still wins over all three: these are its defaults.
 
 settings.env is this machine's own. It is not committed, and it is where an address of the local network or a key
@@ -30,6 +32,10 @@ CHAT_MODEL = "NORMS_CHAT_MODEL"
 CHATBOT_PORT = "NORMS_CHATBOT_PORT"
 MCP_PORT = "NORMS_MCP_PORT"
 MCP_KEY = "NORMS_MCP_KEY"
+# Of the Cloudflare account the Worker runs in, for upload_to_cloudflare.py. Named as wrangler reads them from its
+# environment, which is the only way they reach it. No defaults: without them nothing is uploaded.
+CLOUDFLARE_ACCOUNT_ID = "CLOUDFLARE_ACCOUNT_ID"
+CLOUDFLARE_API_TOKEN = "CLOUDFLARE_API_TOKEN"
 # Their defaults. The embedding model has no setting: the vectors were made with one model, and embed_chunks.py checks
 # what it is given against that model's own numbers.
 LOCAL_SERVER = "http://127.0.0.1:1234"  # LM Studio on this machine; also the example an error message shows of an address
@@ -123,3 +129,13 @@ def chatbot_port(environment: Mapping[str, str] | None = None) -> int:
 
 def mcp_port(environment: Mapping[str, str] | None = None) -> int:
     return port(MCP_PORT, DEFAULT_MCP_PORT, environment)
+
+
+def cloudflare_account_id(environment: Mapping[str, str] | None = None) -> str:
+    """The id of the Cloudflare account; empty when it is not set."""
+    return setting(CLOUDFLARE_ACCOUNT_ID, environment)
+
+
+def cloudflare_api_token(environment: Mapping[str, str] | None = None) -> str:
+    """The Cloudflare API token; empty when it is not set."""
+    return setting(CLOUDFLARE_API_TOKEN, environment)

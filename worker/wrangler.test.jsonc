@@ -1,0 +1,19 @@
+// wrangler.jsonc for the tests: the same Worker without the Workers AI and Vectorize bindings, which have no local
+// version (with them the test runner tries to reach Cloudflare). Tests pass stand-ins for those two instead.
+// Keep the rest in step with wrangler.jsonc.
+{
+  "name": "norms-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "norms",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "vars": { "FIGURES_BASE_URL": "" },
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
+}

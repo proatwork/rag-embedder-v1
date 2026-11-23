@@ -129,6 +129,19 @@ class DefaultsTest(unittest.TestCase):
         self.assertNotEqual(settings.DEFAULT_CHATBOT_PORT, settings.DEFAULT_MCP_PORT)
 
 
+class CloudflareTest(unittest.TestCase):
+    """The account and the token upload_to_cloudflare.py gives wrangler: no defaults."""
+
+    def test_they_are_read_without_the_space_around_them(self):
+        values = {**NO_FILE, settings.CLOUDFLARE_ACCOUNT_ID: " abc ", settings.CLOUDFLARE_API_TOKEN: " token\t"}
+        self.assertEqual(settings.cloudflare_account_id(values), "abc")
+        self.assertEqual(settings.cloudflare_api_token(values), "token")
+
+    def test_unset_they_are_empty(self):
+        self.assertEqual(settings.cloudflare_account_id(NO_FILE), "")
+        self.assertEqual(settings.cloudflare_api_token(NO_FILE), "")
+
+
 class PortTest(unittest.TestCase):
     def test_a_port_that_is_set_is_the_number(self):
         self.assertEqual(settings.mcp_port({**NO_FILE, settings.MCP_PORT: " 9000 "}), 9000)
@@ -147,7 +160,8 @@ class ExampleFileTest(unittest.TestCase):
         self.example = settings.read_file(settings.EXAMPLE_FILE)
 
     def test_it_names_every_setting(self):
-        names = {value for name, value in vars(settings).items() if name.isupper() and isinstance(value, str) and value.startswith("NORMS_")} - {settings.FILE_VARIABLE}
+        prefixes = ("NORMS_", "CLOUDFLARE_")
+        names = {value for name, value in vars(settings).items() if name.isupper() and isinstance(value, str) and value.startswith(prefixes)} - {settings.FILE_VARIABLE}
         self.assertEqual(set(self.example), names)
 
     def test_it_holds_no_value_so_that_copying_it_changes_nothing_and_gives_nothing_away(self):

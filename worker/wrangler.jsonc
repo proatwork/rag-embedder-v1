@@ -1,0 +1,26 @@
+// The norms search as an MCP server on Cloudflare. The secret MCP_KEY (the bearer key) is set with
+// `npx wrangler secret put MCP_KEY`, and for `wrangler dev` in .dev.vars; it is never written here.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "norms-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "ai": { "binding": "AI" },
+  "vectorize": [{ "binding": "VECTORIZE", "index_name": "norms" }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "norms",
+      // Replace with the id `npx wrangler d1 create norms` prints.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "vars": {
+    // Public R2 address the figure links start with; empty until the bucket exists.
+    "FIGURES_BASE_URL": "",
+  },
+  // The rules for searching and citing (../mcp-instructions.md) are imported as text.
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
+}

@@ -1,0 +1,28 @@
+{
+  "name": "norms-mcp-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "db:migrate:local": "wrangler d1 migrations apply norms --local",
+    "db:migrate:remote": "wrangler d1 migrations apply norms --remote"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "agents": "0.33.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "1.8.2",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "vitest": "5.1.0",
+    "wrangler": "4.162.0"
+  }
+}

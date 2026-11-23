@@ -1,4 +1,27 @@
 {
+  "67cee96ab45b8532761620-Normativ privind securitatea la incendiu a construcțiilor": {
+    "code": "P118-1/2025",
+    "title": "NORMATIV PRIVIND SECURITATEA LA INCENDIU A CONSTRUCŢIILOR INDICATIV  P 118-1/2025",
+    "year": 2025,
+    "status": "unverified",
+    "profile": "decimal"
+  },
+  "CODUL AMENAJĂRII TERITORIULUI, URBANISMULUI ȘI CONSTRUCȚIILOR": {
+    "code": "CATUC/2026",
+    "title": "CODUL AMENAJĂRII TERITORIULUI, URBANISMULUI ȘI CONSTRUCȚIILOR",
+    "year": 2026,
+    "status": "in_force",
+    "profile": "decimal",
+    "first_body_page": 7
+  },
+  "Norm-P118-I": {
+    "code": "NORMATIV PRIVIND SECURITATEA LA INCENDIU A CONSTRUCŢIILOR INDICATIV P 118-1/2025INCENDIU A CONSTRUCŢIILOR INDICATIV P 118-1/2025",
+    "title": "NORMATIV PRIVIND SECURITATEA LA INCENDIU A CONSTRUCŢIILOR INDICATIV P 118-1/2025INCENDIU A CONSTRUCŢIILOR INDICATIV P 118-1/2025",
+    "year": 2025,
+    "status": "in_force",
+    "profile": "decimal",
+    "first_body_page": 10
+  },
   "Normativ_P118_1_2015": {
     "code": "P118-1/2025",
     "title": "Normativ privind securitatea la incendiu a construcțiilor",
@@ -21,5 +44,20 @@
     "status": "in_force",
     "profile": "decimal",
     "first_body_page": 3
+  },
+  "P118-II": {
+    "code": "P118/2-2013",
+    "title": "NORMATIV PRIVIND SECURITATEA LA INCENDIU A CONSTRUCIILOR Partea a II a - INSTALATII DE STINGERE P118/2–2013",
+    "year": 2013,
+    "status": "in_force",
+    "profile": "decimal",
+    "first_body_page": 4
+  },
+  "P118-III": {
+    "code": "P118/3-2015",
+    "title": "NORMA TIV PRIVIND SECURITATEA LA INCENDIU A CONSTRUCTIILOR Partea a Ill-a - INSTALATII DE DETECTARE, SEMNALIZARE SI AVERTIZARE INCENDIU lndicativ P118/3 - 2015",
+    "year": 2015,
+    "status": "in_force",
+    "profile": "decimal"
   }
 }

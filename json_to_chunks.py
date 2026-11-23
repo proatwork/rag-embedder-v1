@@ -891,10 +891,15 @@ def chunk_record(
     }
 
 
+def code_slug(code: str) -> str:
+    """The norm's code as the chunk ids start with it: "P118/2-2013" gives "p118-2-2013"."""
+    return SLUG_BREAK.sub("-", code.lower()).strip("-")
+
+
 def assign_ids(chunks: list[Chunk], code: str) -> None:
     """Give every chunk its id: document, unit, piece. A number that occurs twice (an OCR misread, or a real repeat
     in the norm) gets a mark so that ids stay unique."""
-    slug = SLUG_BREAK.sub("-", code.lower()).strip("-")
+    slug = code_slug(code)
     seen: Counter[str] = Counter()
     name = ""
     for chunk in chunks:

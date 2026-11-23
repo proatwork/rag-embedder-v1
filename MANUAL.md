@@ -16,6 +16,8 @@ answers. Each one works on a whole folder.
 | `search.py` | the chunk files and their vectors | the closest chunks to a question, on screen |
 | `eval_retrieval.py` | the same, and a file of questions | how often the right article is found, on screen |
 
+The search is also being moved to Cloudflare, as an MCP server in `worker/`: see *The MCP Worker* at the end.
+
 `split_pages.py` and `pdf_to_md_vision.py` are not used for the current documents and now sit in `OLD/` (copy them back
 to this folder to use them: they import `pipeline_common.py` and `pdf_to_md.py`). `pipeline_common.py` holds the code they share. The previous tools are in `OLD/` and are not used by these scripts.
 
@@ -471,3 +473,130 @@ diacritics, eight are answered in a table, and two can only be answered from a `
 norm's, and they are not the questions asked at work. A bad score is real; a good one is not yet proof. Delete or
 reword the ones you would never ask, and add your own with another `author`: the score per author then shows how
 much the first set flatters the search.
+
+## The MCP Worker (`worker/`)
+
+The search as an MCP server on Cloudflare, so that it answers when this Mac and the Ubuntu box are off. It does what
+`mcp_server.py` does: one tool, `search_norms`, by meaning (`query`) or by number (`article`), with the same
+excerpts, citations, status words and rules (`mcp-instructions.md`, read at build time). OCR and chunking stay on
+the Mac.
+
+| Part | Holds |
+|---|---|
+| Worker `norms-mcp` | MCP at `/mcp`, behind the bearer key `MCP_KEY` |
+| Workers AI | embeds the question with `@cf/qwen/qwen3-embedding-0.6b` (1024 numbers), as a query with an instruction |
+| Vectorize index `norms` | one vector per chunk, its id the chunk id, its metadata `norm` the norm's code |
+| D1 database `norms` | the norms, chunks, article numbers and figures (`worker/migrations/0001_init.sql`) |
+| R2 (later) | the PNGs; `FIGURES_BASE_URL` in `wrangler.jsonc` is their public address |
+
+**State:** the code and its tests are done, and so is `upload_to_cloudflare.py`, which loads the chunks, vectors and
+PNGs (see *Uploading*). Nothing exists on Cloudflare yet and nothing was uploaded: until it is, the Worker has
+nothing to search.
+
+### Before you start
+
+- Node.js and npm (this Mac has them through nvm). Install the packages once, from `worker/`: `npm install`.
+- A Cloudflare account, and `npx wrangler login` once.
+- The chunks must have short codes in `chunk-config.json` (`P118/2-2013`, not the norm's title): the chunk ids are
+  made from the code, and Vectorize takes ids of at most 64 bytes. D1 refuses longer ones. Chunk again after
+  changing a code.
+
+### Commands (from `worker/`)
+
+| Command | Does |
+|---|---|
+| `npm test` | All tests, in the Workers runtime with a local D1 (`wrangler.test.jsonc`). Workers AI and Vectorize have no local version: the tests pass stand-ins. |
+| `npm run typecheck` | TypeScript, no output files |
+| `npm run format` | Prettier on the folder (`worker-configuration.d.ts` is left alone) |
+| `npm run types` | Writes `worker-configuration.d.ts` from `wrangler.jsonc`. Run it after every change to `wrangler.jsonc`; never edit that file by hand. |
+| `npm run dev` | The Worker on this machine. Workers AI and Vectorize are still Cloudflare's (needs the login); the key comes from `.dev.vars`. |
+| `npm run db:migrate:local` / `db:migrate:remote` | Applies `migrations/` to the local or the real D1 |
+| `npm run deploy` | Publishes the Worker |
+
+Tests and `wrangler types` start a local runtime that listens on a port. Inside Claude Code's sandbox that is refused
+(`listen EPERM`) unless `sandbox.network.allowLocalBinding` is on.
+
+`test/golden.ts` holds what the Python search gives for fixture chunks; the tests check the Worker gives the same.
+After changing `search.py` or `search_tool.py`, write it again from the project folder:
+
+```sh
+venvs/bin/python worker/test/make_golden.py worker/test/golden.ts
+```
+
+### Setting up Cloudflare (once, not done yet)
+
+```sh
+npx wrangler d1 create norms                       # put the id it prints into wrangler.jsonc, database_id
+npm run db:migrate:remote
+npx wrangler vectorize create norms --dimensions=1024 --metric=cosine
+npx wrangler vectorize create-metadata-index norms --propertyName=norm --type=string   # before any vector is added
+openssl rand -hex 32                               # the key; keep it, as for mcp_server.py
+npx wrangler secret put MCP_KEY                    # paste the key when asked
+npm run deploy
+```
+
+- The metadata index must exist before the first upload: vectors added earlier cannot be filtered by norm.
+- The key is at least 32 characters; without a usable key the Worker answers every request with 500.
+- For `npm run dev`, put `MCP_KEY=<key>` in `worker/.dev.vars` (not committed).
+
+### Uploading
+
+`upload_to_cloudflare.py` (project folder) loads every `.jsonl` of a chunks folder into D1 and Vectorize, and with
+`--bucket` its PNGs into R2. A norm loaded before is replaced; what the new chunks no longer hold is deleted.
+
+```sh
+venvs/bin/python upload_to_cloudflare.py --chunks-dir docs_processed/chunks --dry-run    # checks, writes the files, sends nothing
+venvs/bin/python upload_to_cloudflare.py --chunks-dir docs_processed/chunks [--bucket NAME] [--cache-dir DIR] [--config FILE]
+venvs/bin/python upload_to_cloudflare.py --remove P118-II [--bucket NAME] [--yes]
+```
+
+- Settings: `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` in `settings.env` (or the environment). The token
+  needs D1 and Vectorize edit, Workers AI, and R2 edit (only with `--bucket`). Wrangler gets them in its environment, never on its command line.
+  `--dry-run` needs neither.
+- Wrangler runs as `npx wrangler` from `worker/` (run `npm install` there first), so it reads `wrangler.jsonc`.
+- Order: every norm is checked first (a config entry, no two with one code, chunk ids of at most 64 bytes, every
+  PNG present) and embedded by Workers AI (`@cf/qwen/qwen3-embedding-0.6b`, as passages), so a failure there leaves
+  Cloudflare untouched. Then per norm: read what D1 holds of it; stop if another norm in D1 has its code; upsert the
+  vectors; put the PNGs whose key and hash D1 does not have yet; delete the vectors of chunks that are gone; replace
+  the norm in D1 in one file (one transaction). In this order a run that failed half way can be run again. A norm
+  that fails there is reported and the others go on; the run ends with the list of those that failed.
+- The vectors are cached in `docs_processed/cloudflare_cache` (`--cache-dir`), one `.npz` per norm: a run after a
+  re-chunk embeds only the texts that changed.
+- `--dry-run` writes each norm's `.sql` and `.ndjson` (cached vectors, `null` for those it would embed) to a
+  temporary folder it prints. No network, no wrangler.
+- `--remove DOC_KEY` (the chunk file's name) deletes the norm's vectors, its PNGs with `--bucket`, then its rows (the
+  schema cascades). It asks first unless `--yes`.
+- Without `--bucket` no PNG is sent; the figures still go into D1, with an empty hash, so the first later run with
+  `--bucket` sends all of them.
+- Chunks made before the short codes have ids over 64 bytes: the script refuses them. Chunk again first.
+- The first real run needs everything in *Setting up Cloudflare* above: the D1 id in `wrangler.jsonc` (still the
+  zero placeholder), the migration applied, and the Vectorize index with its `norm` metadata index. `--bucket` also
+  needs the bucket, which that list does not make yet: `npx wrangler r2 bucket create <name>`.
+
+### Connecting Claude
+
+Claude Code:
+
+```sh
+claude mcp add --transport http norms https://norms-mcp.<your-subdomain>.workers.dev/mcp --header "Authorization: Bearer <key>"
+```
+
+- Clients of MCP's 2026 protocol get JSON replies; 2025 clients (Claude Code and Desktop today) get a short event
+  stream, which they read the same way.
+- Not known yet: whether claude.ai's custom connectors accept a fixed `Authorization` header. If they do not, the
+  Worker needs OAuth (Cloudflare Access or an MCP server portal) for claude.ai and the phone app.
+- On a custom domain the handler does not check the Host header (only the key gates it) and refuses browser
+  Origins other than localhost: see the comment at the top of `src/index.ts`.
+
+### Where the code is
+
+| File | Holds |
+|---|---|
+| `src/index.ts` | the entry: key check, then the MCP handler (`agents` `createMcpHandler`, stateless) |
+| `src/auth.ts` | the bearer key check |
+| `src/store.ts` | D1 queries, the Vectorize search, the Workers AI embedding |
+| `src/search.ts`, `src/tool.ts`, `src/rules.ts`, `src/server.ts` | the port of `search.py`, `search_tool.py` and the tool's description |
+| `src/types.ts` | what the data layer and the search logic exchange |
+
+Where it still differs from `mcp_server.py`: a call to an unknown tool gets the MCP library's own error, not
+`NO_SUCH_TOOL`; the figures are still said to be not shown (links to them come with R2).

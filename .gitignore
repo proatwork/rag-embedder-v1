@@ -11,6 +11,10 @@ __pycache__/
 # The earlier OCR tools and their outputs (1.1 GB): kept on disk, not in the repository
 OLD/
 
+# The Mac app's build products (PdfToMdApp/build_app.sh): rebuilt, never committed
+PdfToMdApp/.build/
+PdfToMdApp/PdfToMd.app/
+
 # This machine's own Claude Code permissions
 .claude/settings.local.json
 NormativeIncendiu

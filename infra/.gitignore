@@ -1,0 +1,5 @@
+# Provider downloads and local state. Keep the lock file (.terraform.lock.hcl) in git.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
